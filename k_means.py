@@ -8,19 +8,32 @@ from sklearn.datasets.samples_generator import make_blobs
 from scipy.spatial import distance
 
 class KMeans:
-    def __init__(self, data, num_clusters, random_state):
+    def __init__(self, data, num_clusters, random_state=11, max_iters=100):
         self.data = data
         self.num_clusters = num_clusters
         self.random_state = random_state
+        self.max_iters = max_iters
 
     def run(self):
-#        distance.euclidean([1, 0, 0], [0, 1, 0])
-
-        # Initially choose centroids to be K random points from the data.
         self.__choose_random_centroids()
-        print(self.centroids)
+
+        prev_centroids = np.array([])
+        cluster_labels = np.zeros(len(self.data), dtype=int)
+        iters = 0
+        while not np.array_equal(self.centroids, prev_centroids) and iters < self.max_iters:
+            iters += 1
+            for i, point in enumerate(self.data):
+                shortest_distance = np.inf
+                for j, centroid in enumerate(self.centroids):
+                    d = distance.euclidean(point, centroid)
+                    if d < shortest_distance:
+                        cluster_labels[i] = j
+                        shortest_distance = d
+
+        return cluster_labels
 
         # Loop until the centroids don't change.
+
         #   Assign each data point to a cluster by min distance to centroid.
         #   Recalculate the centroid of each cluster.
 
@@ -35,7 +48,7 @@ class KMeans:
 
 NUM_CLUSTERS = 3
 CLUSTER_STD = 0.8
-RANDOM_STATE=11
+RANDOM_STATE=12
 
 X, z = make_blobs(
     n_samples=300,
@@ -44,8 +57,8 @@ X, z = make_blobs(
     random_state=RANDOM_STATE
 )
 
-#plt.scatter(X[:, 0], X[:, 1], s=50)
-#plt.show()
+clf = KMeans(data=X, num_clusters=NUM_CLUSTERS)
+colors = clf.run()
 
-clf = KMeans(data=X, num_clusters=NUM_CLUSTERS, random_state=RANDOM_STATE)
-clf.run()
+plt.scatter(X[:, 0], X[:, 1], s=50, c=colors)
+plt.show()
