@@ -13,29 +13,35 @@ class KMeans:
         self.num_clusters = num_clusters
         self.random_state = random_state
         self.max_iters = max_iters
+        self.cluster_labels = np.zeros(len(self.data), dtype=int)
 
     def run(self):
         self.__choose_random_centroids()
 
         prev_centroids = np.array([])
-        cluster_labels = np.zeros(len(self.data), dtype=int)
         iters = 0
         while not np.array_equal(self.centroids, prev_centroids) and iters < self.max_iters:
-            iters += 1
+
+            # Assign each point to a cluster by check which centroid is closest.
             for i, point in enumerate(self.data):
                 shortest_distance = np.inf
                 for j, centroid in enumerate(self.centroids):
                     d = distance.euclidean(point, centroid)
                     if d < shortest_distance:
-                        cluster_labels[i] = j
+                        self.cluster_labels[i] = j
                         shortest_distance = d
 
-        return cluster_labels
+#            prev_centroids = self.centroids
+#
+#            # Calculate a new centroid for each cluster.
+#            for i in range(self.num_clusters):
+#
+#
+#                for j, point in enumerate(self.data):
+#                    label = cluster_labels[i]
 
-        # Loop until the centroids don't change.
-
-        #   Assign each data point to a cluster by min distance to centroid.
-        #   Recalculate the centroid of each cluster.
+            iters += 1
+        return self.cluster_labels, self.centroids
 
     def __choose_random_centroids(self):
         np.random.seed(self.random_state)
@@ -57,8 +63,9 @@ X, z = make_blobs(
     random_state=RANDOM_STATE
 )
 
-clf = KMeans(data=X, num_clusters=NUM_CLUSTERS)
-colors = clf.run()
+clf = KMeans(data=X, num_clusters=NUM_CLUSTERS, max_iters=1)
+cluster_labels, centroids = clf.run()
 
-plt.scatter(X[:, 0], X[:, 1], s=50, c=colors)
+plt.scatter(X[:, 0], X[:, 1], c=cluster_labels, s=10)
+plt.scatter(centroids[:, 0], centroids[:, 1], c='black', s=200, marker='x')
 plt.show()
