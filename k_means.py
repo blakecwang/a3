@@ -15,32 +15,15 @@ class KMeans:
         self.max_iters = max_iters
         self.cluster_labels = np.zeros(len(self.data), dtype=int)
         self.prev_centroids = np.array([])
+        self.iters = 0
 
     def run(self):
         self.__choose_random_centroids()
-
-        iters = 0
-        while not np.array_equal(self.centroids, self.prev_centroids) and iters < self.max_iters:
-            # Assign each point to a cluster by check which centroid is closest.
-            for i, point in enumerate(self.data):
-                shortest_distance = np.inf
-                for j, centroid in enumerate(self.centroids):
-                    d = distance.euclidean(point, centroid)
-                    if d < shortest_distance:
-                        self.cluster_labels[i] = j
-                        shortest_distance = d
-
-            self.prev_centroids = np.copy(self.centroids)
-
-            # Calculate a new centroid for each cluster.
-            for i in range(self.num_clusters):
-                mask = np.array([label == i for label in self.cluster_labels])
-                self.centroids[i] = np.mean(self.data[mask], axis=0)
-
-            print('.', end='')
-
-            iters += 1
-        return self.cluster_labels, self.centroids
+        while not np.array_equal(self.centroids, self.prev_centroids) and self.iters < self.max_iters:
+            self.__assign_points_to_clusters()
+            self.__find_new_centroids()
+            self.iters += 1
+        return self.cluster_labels, self.centroids, self.iters
 
     def __choose_random_centroids(self):
         np.random.seed(self.random_state)
@@ -51,19 +34,35 @@ class KMeans:
         )
         self.centroids = self.data[indices]
 
-NUM_CLUSTERS = 3
-CLUSTER_STD = 0.8
-RANDOM_STATE=12
+    def __assign_points_to_clusters(self):
+        for i, point in enumerate(self.data):
+            shortest_distance = np.inf
+            for j, centroid in enumerate(self.centroids):
+                d = distance.euclidean(point, centroid)
+                if d < shortest_distance:
+                    self.cluster_labels[i] = j
+                    shortest_distance = d
+
+    def __find_new_centroids(self):
+        self.prev_centroids = np.copy(self.centroids)
+        for i in range(self.num_clusters):
+            mask = np.array([label == i for label in self.cluster_labels])
+            self.centroids[i] = np.mean(self.data[mask], axis=0)
+
+# This is used both to when generating the data and when running KMeans.
+NUM_CLUSTERS = 4
 
 X, z = make_blobs(
-    n_samples=300,
     centers=NUM_CLUSTERS,
-    cluster_std=CLUSTER_STD,
-    random_state=RANDOM_STATE
+    n_samples=1000,
+    cluster_std=0.99,
+    random_state=12
 )
 
 clf = KMeans(data=X, num_clusters=NUM_CLUSTERS, max_iters=100)
-cluster_labels, centroids = clf.run()
+cluster_labels, centroids, iters = clf.run()
+
+print('iters:', iters)
 
 plt.scatter(X[:, 0], X[:, 1], c=cluster_labels, s=10)
 plt.scatter(centroids[:, 0], centroids[:, 1], c='black', s=200, marker='x')
