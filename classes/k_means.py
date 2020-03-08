@@ -3,8 +3,6 @@
 # https://jakevdp.github.io/PythonDataScienceHandbook/05.11-k-means.html
 
 import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.datasets.samples_generator import make_blobs
 from scipy.spatial import distance
 
 class KMeans:
@@ -48,22 +46,3 @@ class KMeans:
         for i in range(self.num_clusters):
             mask = np.array([label == i for label in self.cluster_labels])
             self.centroids[i] = np.mean(self.data[mask], axis=0)
-
-# This is used both to when generating the data and when running KMeans.
-NUM_CLUSTERS = 4
-
-X, z = make_blobs(
-    centers=NUM_CLUSTERS,
-    n_samples=1000,
-    cluster_std=0.99,
-    random_state=12
-)
-
-clf = KMeans(data=X, num_clusters=NUM_CLUSTERS, max_iters=100)
-cluster_labels, centroids, iters = clf.run()
-
-print('iters:', iters)
-
-plt.scatter(X[:, 0], X[:, 1], c=cluster_labels, s=10)
-plt.scatter(centroids[:, 0], centroids[:, 1], c='black', s=200, marker='x')
-plt.show()
