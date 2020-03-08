@@ -3,7 +3,7 @@
 # https://jakevdp.github.io/PythonDataScienceHandbook/05.11-k-means.html
 
 import numpy as np
-#from scipy.spatial import distance
+from scipy.stats import multivariate_normal
 
 class ExpectMax:
     def __init__(self, data, num_clusters, random_state=11, max_iters=100, cluster_std=0.5):
@@ -11,14 +11,13 @@ class ExpectMax:
         self.num_clusters = num_clusters
         self.random_state = random_state
         self.max_iters = max_iters
-        self.hidden_values = np.zeros((len(data), num_clusters), dtype=int)
+        self.hidden_values = np.zeros((len(data), num_clusters))
         self.prev_means = np.array([])
         self.cluster_std = cluster_std
+        self.cov = np.identity(data[0].shape[0]) * cluster_std
         self.iters = 0
 
     def run(self):
-        print('run!')
-        exit()
         self.__choose_random_means()
         while not np.array_equal(self.means, self.prev_means) and self.iters < self.max_iters:
             self.__calc_hidden_values()
@@ -36,13 +35,12 @@ class ExpectMax:
         self.means = self.data[indices]
 
     def __calc_hidden_values(self):
-        for i, point in enumerate(self.data):
-            shortest_distance = np.inf
-            for j, mean in enumerate(self.means):
-                d = distance.euclidean(point, mean)
-                if d < shortest_distance:
-                    self.hidden_values[i] = j
-                    shortest_distance = d
+        for i, mean in enumerate(self.means):
+            distribution = multivariate_normal(mean, self.cov)
+            for j, point in enumerate(self.data):
+                self.hidden_values[j, i] = distribution.pdf(self.data[j])
+        print(self.hidden_values)
+        exit()
 
     def __find_new_means(self):
         self.prev_means = np.copy(self.means)
