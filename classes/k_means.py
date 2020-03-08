@@ -11,7 +11,7 @@ class KMeans:
         self.num_clusters = num_clusters
         self.random_state = random_state
         self.max_iters = max_iters
-        self.cluster_labels = np.zeros(len(self.data), dtype=int)
+        self.cluster_labels = np.zeros(len(data), dtype=int)
         self.prev_centroids = np.array([])
         self.iters = 0
 
