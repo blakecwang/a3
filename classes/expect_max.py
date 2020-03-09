@@ -4,6 +4,7 @@
 
 import numpy as np
 from scipy.stats import multivariate_normal
+from math import floor
 
 class ExpectMax:
     def __init__(self, data, num_clusters, random_state=11, max_iters=100, cluster_std=0.5):
@@ -35,12 +36,15 @@ class ExpectMax:
         self.means = self.data[indices]
 
     def __calc_hidden_values(self):
-        for i, mean in enumerate(self.means):
-            distribution = multivariate_normal(mean, self.cov)
-            for j, point in enumerate(self.data):
-                self.hidden_values[j, i] = distribution.pdf(self.data[j])
-        print(self.hidden_values)
-        exit()
+        distributions = np.array(
+            [multivariate_normal(mean, self.cov) for mean in self.means]
+        )
+        for i, point in enumerate(self.data):
+            for j, distribution in enumerate(distributions):
+                self.hidden_values[i, j] = distribution.pdf(point)
+            z_sum = np.sum(self.hidden_values[i])
+            for j in range(self.num_clusters):
+                self.hidden_values[i, j] = self.hidden_values[i, j] / z_sum
 
     def __find_new_means(self):
         self.prev_means = np.copy(self.means)
