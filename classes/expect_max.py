@@ -22,7 +22,7 @@ class ExpectMax:
         self.__choose_random_means()
         while not np.array_equal(self.means, self.prev_means) and self.iters < self.max_iters:
             self.__calc_hidden_values()
-            self.__find_new_means()
+#            self.__find_new_means()
             self.iters += 1
         return self.hidden_values, self.means, self.iters
 
