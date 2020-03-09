@@ -30,7 +30,7 @@ X, z = make_blobs(
 #plt.savefig(f"k_means_clusters.png")
 ##plt.show()
 
-expect_max = ExpectMax(data=X, num_clusters=NUM_CLUSTERS, cluster_std=CLUSTER_STD, max_iters=1)
+expect_max = ExpectMax(data=X, num_clusters=NUM_CLUSTERS, cluster_std=CLUSTER_STD, max_iters=100)
 hidden_values, means, iters = expect_max.run()
 colors = np.array([np.argmax(v_row) for v_row in hidden_values])
 
