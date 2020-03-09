@@ -53,8 +53,8 @@ class ExpectMax:
         for i in range(self.num_clusters):
             self.means[i] = np.average(self.data, axis=0, weights=self.hidden_values[:, i])
 
-    def __total_distance(self, points1, points2):
+    def __total_distance(self, before, after):
         total = 0
-        for i in range(points1.shape[0]):
-            total += distance.euclidean(points1[i], points2[i])
+        for i in range(before.shape[0]):
+            total += distance.euclidean(before[i], after[i])
         return total
