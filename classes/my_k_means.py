@@ -45,4 +45,9 @@ class MyKMeans:
         self.prev_centers = np.copy(self.centers)
         for i in range(self.n_clusters):
             mask = np.array([label == i for label in self.cluster_labels])
-            self.centers[i] = np.mean(self.data[mask], axis=0)
+            if np.count_nonzero(mask) == 0:
+                # If there are no points in this cluster, then set the cluster
+                # center to be the origin.
+                self.centers[i] = np.zeros(self.data.shape[1])
+            else:
+                self.centers[i] = np.mean(self.data[mask], axis=0)
