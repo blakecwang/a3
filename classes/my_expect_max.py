@@ -8,7 +8,7 @@ from scipy.spatial import distance
 from math import floor
 
 class MyExpectMax:
-    def __init__(self, data, n_clusters, random_state=11, max_iters=100, cluster_std=0.5, tol=0.1):
+    def __init__(self, data, n_clusters, random_state=11, max_iters=100, cluster_std=1.0, tol=0.1):
         self.data = data
         self.n_clusters = n_clusters
         self.random_state = random_state
@@ -26,8 +26,8 @@ class MyExpectMax:
             self.__calc_hidden_values()
             self.__find_new_centers()
             self.iters += 1
-        colors = np.array([np.argmax(v_row) for v_row in self.hidden_values])
-        return colors, self.hidden_values, self.centers, self.iters
+        cluster_labels = np.array([np.argmax(row) for row in self.hidden_values])
+        return cluster_labels, self.centers, self.iters
 
     def __choose_random_centers(self):
         np.random.seed(self.random_state)
