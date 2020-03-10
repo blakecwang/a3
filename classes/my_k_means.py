@@ -26,7 +26,7 @@ class MyKMeans:
     def __choose_random_centers(self):
         np.random.seed(self.random_state)
         indices = np.random.choice(
-            len(self.data),
+            self.data.shape[0],
             size=self.n_clusters,
             replace=False
         )
