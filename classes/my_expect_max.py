@@ -45,7 +45,7 @@ class MyExpectMax:
         for i, point in enumerate(self.data):
             for j, distribution in enumerate(distributions):
                 self.hidden_values[i, j] = distribution.pdf(point)
-            z_sum = np.sum(self.hidden_values[i])
+            z_sum = np.sum(self.hidden_values[i]) + 1e-300
             for j in range(self.n_clusters):
                 self.hidden_values[i, j] = self.hidden_values[i, j] / z_sum
 

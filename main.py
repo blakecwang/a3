@@ -6,6 +6,7 @@ import string
 import pprint
 import itertools
 import matplotlib.pyplot as plt
+import pandas as pd
 from sklearn.datasets import make_blobs
 from sklearn.metrics import silhouette_score
 from classes.my_k_means import MyKMeans
@@ -48,25 +49,20 @@ def lowest_label_error(labels1, labels2):
             lowest_error = error
     return lowest_error
 
-#filename = 'wine'
-#target = 'quality'
-##filename = 'breast_cancer'
-##target = 'Diagnosis'
-#
-#train = pd.read_csv(f'{filename}_train.csv')
-#test = pd.read_csv(f'{filename}_test.csv')
-#
-#y_train = train.loc[:,target]
-#X_train = train.drop(target, axis=1)
-#y_test = test.loc[:,target]
-#X_test = test.drop(target, axis=1)
 
-X, y = make_blobs(
-    centers=6,
-    n_features=2,
-    n_samples=1000,
-    random_state=11
-)
+target = 'quality'
+train = pd.read_csv(f'wine_train.csv')
+test = pd.read_csv(f'wine_test.csv')
+full = pd.concat([train, test])
+y = np.array(train.loc[:,target])
+X = np.array(train.drop(target, axis=1))
+
+# X, y = make_blobs(
+#     centers=6,
+#     n_features=2,
+#     n_samples=1000,
+#     random_state=11
+# )
 
 np.random.seed(11)
 random_states = np.random.choice(range(1000), size=5, replace=False)
@@ -79,10 +75,11 @@ metrics = {
 k_means_scores = []
 expexct_max_scores = []
 cluster_counts = []
-for n_clusters in range(6, 7):
+total_start_time = time.time()
+for n_clusters in range(2, 12):
     best_score = {'MyKMeans': -1, 'MyExpectMax': -1}
-    for random_state in [372]:
-#    for random_state in random_states:
+#    for random_state in [372]:
+    for random_state in random_states:
         clusterers = [
             MyKMeans(data=X, n_clusters=n_clusters, random_state=random_state),
             MyExpectMax(data=X, n_clusters=n_clusters, random_state=random_state)
@@ -96,7 +93,7 @@ for n_clusters in range(6, 7):
 
             alg = clusterer.__class__.__name__
 
-            scatter_stuff(X, cluster_labels, centers, alg)
+#            scatter_stuff(X, cluster_labels, centers, alg)
 
             if score > metrics[alg]['score'] or \
                (score == metrics[alg]['score'] and \
@@ -106,7 +103,7 @@ for n_clusters in range(6, 7):
                 metrics[alg]['random_state'] = random_state
                 metrics[alg]['iters'] = iters
                 metrics[alg]['elapsed'] = elapsed
-                metrics[alg]['error'] = lowest_label_error(cluster_labels, y)
+#                metrics[alg]['error'] = lowest_label_error(cluster_labels, y)
 
             if score > best_score[alg]:
                 best_score[alg] = score
@@ -115,15 +112,15 @@ for n_clusters in range(6, 7):
     expexct_max_scores.append(best_score['MyExpectMax'])
     cluster_counts.append(n_clusters)
 
-exit()
-
-#print(k_means_scores)
-#print(expexct_max_scores)
+print('total_elapsed:', time.time() - total_start_time)
+print('k_means_scores:', k_means_scores)
+print('expexct_max_scores:', expexct_max_scores)
 
 pprint.PrettyPrinter(indent=4).pprint(metrics)
 
-plot_stuff(cluster_counts, k_means_scores, expexct_max_scores, 'blobs')
+plot_stuff(cluster_counts, k_means_scores, expexct_max_scores, 'wine')
 
+# # blobs
 # {   'MyExpectMax': {   'elapsed': 0.667,
 #                        'error': 10,
 #                        'iters': 5,
@@ -136,3 +133,16 @@ plot_stuff(cluster_counts, k_means_scores, expexct_max_scores, 'blobs')
 #                     'n_clusters': 6,
 #                     'random_state': 372,
 #                     'score': 0.7502547601018824}}
+
+
+# # wine
+# {   'MyExpectMax': {   'elapsed': 2.176,
+#                        'iters': 8,
+#                        'n_clusters': 3,
+#                        'random_state': 372,
+#                        'score': 0.02883871542935671},
+#     'MyKMeans': {   'elapsed': 1.02,
+#                     'iters': 10,
+#                     'n_clusters': 2,
+#                     'random_state': 25,
+#                     'score': 0.6238198074799757}}
