@@ -11,6 +11,15 @@ from sklearn.metrics import silhouette_score
 from classes.my_k_means import MyKMeans
 from classes.my_expect_max import MyExpectMax
 
+def scatter_stuff(X, y, centers, name):
+    plt.scatter(X[:, 0], X[:, 1], c=y, s=10)
+    plt.scatter(centers[:, 0], centers[:, 1], c='black', s=200, marker='x')
+    plt.xlabel('x1', fontsize=18, fontname='Arial')
+    plt.ylabel('x2', fontsize=18, fontname='Arial')
+    plt.tight_layout()
+    plt.savefig(f"{name}_scatter.png")
+#    plt.show()
+
 def plot_stuff(cluster_counts, k_means, expect_max, name):
     font = { 'family': 'Arial', 'size': 18 }
     plt.rc('font', **font)
@@ -21,7 +30,7 @@ def plot_stuff(cluster_counts, k_means, expect_max, name):
     plt.tight_layout()
     plt.legend()
     plt.savefig(f"{name}.png")
-    plt.show()
+#    plt.show()
 
 def lowest_label_error(labels1, labels2):
     n_labels = np.unique(labels1).shape[0]
@@ -70,9 +79,10 @@ metrics = {
 k_means_scores = []
 expexct_max_scores = []
 cluster_counts = []
-for n_clusters in range(2, 11):
+for n_clusters in range(6, 7):
     best_score = {'MyKMeans': -1, 'MyExpectMax': -1}
-    for random_state in random_states:
+    for random_state in [372]:
+#    for random_state in random_states:
         clusterers = [
             MyKMeans(data=X, n_clusters=n_clusters, random_state=random_state),
             MyExpectMax(data=X, n_clusters=n_clusters, random_state=random_state)
@@ -85,6 +95,9 @@ for n_clusters in range(2, 11):
             score = silhouette_score(X, cluster_labels)
 
             alg = clusterer.__class__.__name__
+
+            scatter_stuff(X, cluster_labels, centers, alg)
+
             if score > metrics[alg]['score'] or \
                (score == metrics[alg]['score'] and \
                (iters < metrics[alg]['iters'] or elapsed < metrics[alg]['elapsed'])):
@@ -102,6 +115,8 @@ for n_clusters in range(2, 11):
     expexct_max_scores.append(best_score['MyExpectMax'])
     cluster_counts.append(n_clusters)
 
+exit()
+
 #print(k_means_scores)
 #print(expexct_max_scores)
 
@@ -109,13 +124,15 @@ pprint.PrettyPrinter(indent=4).pprint(metrics)
 
 plot_stuff(cluster_counts, k_means_scores, expexct_max_scores, 'blobs')
 
-#{   'MyExpectMax': {   'elapsed': 0.228,
-#                       'iters': 3,
-#                       'n_clusters': 3,
-#                       'random_state': 730,
-#                       'score': 0.698220165940078},
-#    'MyKMeans': {   'elapsed': 0.114,
-#                    'iters': 3,
-#                    'n_clusters': 3,
-#                    'random_state': 730,
-#                    'score': 0.698220165940078}}
+# {   'MyExpectMax': {   'elapsed': 0.667,
+#                        'error': 10,
+#                        'iters': 5,
+#                        'n_clusters': 6,
+#                        'random_state': 372,
+#                        'score': 0.7502547601018824},
+#     'MyKMeans': {   'elapsed': 0.412,
+#                     'error': 10,
+#                     'iters': 6,
+#                     'n_clusters': 6,
+#                     'random_state': 372,
+#                     'score': 0.7502547601018824}}
