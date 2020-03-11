@@ -39,17 +39,18 @@ def lowest_label_error(labels1, labels2):
             lowest_error = error
     return lowest_error
 
-#dataset_attrs = [('wine', 'quality'), ('breast_cancer', 'Diagnosis')]
+#filename = 'wine'
+#target = 'quality'
+##filename = 'breast_cancer'
+##target = 'Diagnosis'
 #
-#for filename, target in dataset_attrs:
+#train = pd.read_csv(f'{filename}_train.csv')
+#test = pd.read_csv(f'{filename}_test.csv')
 #
-#    train = pd.read_csv(f'{filename}_train.csv')
-#    test = pd.read_csv(f'{filename}_test.csv')
-#
-#    y_train = train.loc[:,target]
-#    X_train = train.drop(target, axis=1)
-#    y_test = test.loc[:,target]
-#    X_test = test.drop(target, axis=1)
+#y_train = train.loc[:,target]
+#X_train = train.drop(target, axis=1)
+#y_test = test.loc[:,target]
+#X_test = test.drop(target, axis=1)
 
 X, y = make_blobs(
     centers=6,
