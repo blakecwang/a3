@@ -56,3 +56,18 @@
                     'random_state': 464,
                     'score': 0.6238198074799757}}
 total_elapsed: 765.8304150104523
+
+# best one
+{   'MyExpectMax': {   'cluster_std': 10000,
+                       'elapsed': 2.581,
+                       'iters': 13,
+                       'n_clusters': 2,
+                       'random_state': 25,
+                       'score': 0.6238179528852561},
+    'MyKMeans': {   'cluster_std': 10000,
+                    'elapsed': 1.082,
+                    'iters': 10,
+                    'n_clusters': 2,
+                    'random_state': 25,
+                    'score': 0.6238198074799757}}
+total_elapsed: 750.6363530158997

@@ -67,7 +67,7 @@ X = np.array(train.drop(target, axis=1))
 
 np.random.seed(11)
 #random_states = np.random.choice(range(1000), size=5, replace=False)
-random_states =  [464]
+random_states =  [25]
 
 metrics = {
     'MyKMeans': {'score': -1},
@@ -80,10 +80,10 @@ cluster_counts = []
 total_start_time = time.time()
 for n_clusters in range(2, 12):
     best_score = {'MyKMeans': -1, 'MyExpectMax': -1}
-    for cluster_std in [1000]:
+    for cluster_std in [10000]:
         for random_state in random_states:
             clusterers = [
-                MyKMeans(data=X, n_clusters=n_clusters, random_state=25),
+                MyKMeans(data=X, n_clusters=n_clusters, random_state=random_state),
                 MyExpectMax(data=X, n_clusters=n_clusters, random_state=random_state, cluster_std=cluster_std)
             ]
 

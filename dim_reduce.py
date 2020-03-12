@@ -1,54 +1,11 @@
 #!/usr/bin/env python3
 
-import numpy as np
-import time
-import string
-import pprint
-import itertools
-import matplotlib.pyplot as plt
+# https://github.com/mGalarnyk/Python_Tutorials/blob/master/Sklearn/PCA/PCA_to_Speed-up_Machine_Learning_Algorithms.ipynb
+
 import pandas as pd
+import numpy as np
 from sklearn.datasets import make_blobs
-from sklearn.metrics import silhouette_score
-from classes.my_k_means import MyKMeans
-from classes.my_expect_max import MyExpectMax
-
-def scatter_stuff(X, y, centers, name):
-    plt.scatter(X[:, 0], X[:, 1], c=y, s=10)
-    plt.scatter(centers[:, 0], centers[:, 1], c='black', s=200, marker='x')
-    plt.xlabel('x1', fontsize=18, fontname='Arial')
-    plt.ylabel('x2', fontsize=18, fontname='Arial')
-    plt.tight_layout()
-    plt.savefig(f"{name}_scatter.png")
-#    plt.show()
-
-def plot_stuff(cluster_counts, k_means, expect_max, name):
-    font = { 'family': 'Arial', 'size': 18 }
-    plt.rc('font', **font)
-#    plt.plot(cluster_counts, k_means, label='MyKMeans')
-    plt.plot(cluster_counts, expect_max, label='MyExpectMax')
-    plt.ylabel('Average Silhouette', fontsize=18, fontname='Arial')
-    plt.xlabel('Clusters', fontsize=18, fontname='Arial')
-    plt.tight_layout()
-    plt.legend()
-    plt.savefig(f"{name}.png")
-#    plt.show()
-
-def lowest_label_error(labels1, labels2):
-    n_labels = np.unique(labels1).shape[0]
-    masks1 = np.zeros((n_labels, labels1.shape[0]), dtype=bool)
-    masks2 = np.copy(masks1)
-    for i in range(n_labels):
-        masks1[i] = np.array([label == i for label in labels1])
-    for i in range(n_labels):
-        masks2[i] = np.array([label == i for label in labels2])
-
-    lowest_error = np.inf
-    for masks2_perm in itertools.permutations(masks2):
-        error = np.count_nonzero(masks1 != masks2_perm)
-        if error < lowest_error:
-            lowest_error = error
-    return lowest_error
-
+from sklearn.decomposition import PCA, FastICA
 
 target = 'quality'
 train = pd.read_csv(f'wine_train.csv')
@@ -63,62 +20,16 @@ X = np.array(train.drop(target, axis=1))
 #    n_samples=1000,
 #    random_state=11
 #)
-#print('score:', silhouette_score(X, y))
 
-np.random.seed(11)
-random_states = np.random.choice(range(1000), size=5, replace=False)
+#print(X.shape)
+#print(X)
+#print('-')
 
-metrics = {
-    'MyKMeans': {'score': -1},
-    'MyExpectMax': {'score': -1}
-}
+pca = PCA(n_components=0.95)
+pca.fit(X)
+X = pca.transform(X)
 
-k_means_scores = []
-expexct_max_scores = []
-cluster_counts = []
-total_start_time = time.time()
-for n_clusters in range(2, 12):
-    best_score = {'MyKMeans': -1, 'MyExpectMax': -1}
-    for cluster_std in [100, 500, 1000]:
-        for random_state in [464]:
-#        for random_state in random_states:
-            clusterers = [
-#                MyKMeans(data=X, n_clusters=n_clusters, random_state=random_state),
-                MyExpectMax(data=X, n_clusters=n_clusters, random_state=random_state, cluster_std=cluster_std)
-            ]
-
-            for clusterer in clusterers:
-                start_time = time.time()
-                cluster_labels, centers, iters = clusterer.run()
-                elapsed = round(time.time() - start_time, 3)
-                score = silhouette_score(X, cluster_labels)
-
-                alg = clusterer.__class__.__name__
-
-#                scatter_stuff(X, cluster_labels, centers, alg)
-
-                if score > metrics[alg]['score'] or \
-                   (score == metrics[alg]['score'] and \
-                   (iters < metrics[alg]['iters'] or elapsed < metrics[alg]['elapsed'])):
-                    metrics[alg]['score'] = score
-                    metrics[alg]['n_clusters'] = n_clusters
-                    metrics[alg]['random_state'] = random_state
-                    metrics[alg]['iters'] = iters
-                    metrics[alg]['elapsed'] = elapsed
-                    metrics[alg]['cluster_std'] = cluster_std
-    #                metrics[alg]['error'] = lowest_label_error(cluster_labels, y)
-
-                if score > best_score[alg]:
-                    best_score[alg] = score
-
-        k_means_scores.append(best_score['MyKMeans'])
-        expexct_max_scores.append(best_score['MyExpectMax'])
-        cluster_counts.append(n_clusters)
-
-#print('k_means_scores:', k_means_scores)
-#print('expexct_max_scores:', expexct_max_scores)
-
-pprint.PrettyPrinter(indent=4).pprint(metrics)
-print('total_elapsed:', time.time() - total_start_time)
-
-plot_stuff(cluster_counts, k_means_scores, expexct_max_scores, 'wine')
+print(X.shape)
+print(pca.components_)
+print(pca.explained_variance_ratio_)
+#print(X)
