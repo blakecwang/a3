@@ -57,12 +57,13 @@ full = pd.concat([train, test])
 y = np.array(train.loc[:,target])
 X = np.array(train.drop(target, axis=1))
 
-# X, y = make_blobs(
-#     centers=6,
-#     n_features=2,
-#     n_samples=1000,
-#     random_state=11
-# )
+#X, y = make_blobs(
+#    centers=6,
+#    n_features=2,
+#    n_samples=1000,
+#    random_state=11
+#)
+#print('score:', silhouette_score(X, y))
 
 np.random.seed(11)
 random_states = np.random.choice(range(1000), size=5, replace=False)
@@ -78,39 +79,40 @@ cluster_counts = []
 total_start_time = time.time()
 for n_clusters in range(2, 12):
     best_score = {'MyKMeans': -1, 'MyExpectMax': -1}
-#    for random_state in [372]:
-    for random_state in random_states:
-        clusterers = [
-            MyKMeans(data=X, n_clusters=n_clusters, random_state=random_state),
-            MyExpectMax(data=X, n_clusters=n_clusters, random_state=random_state)
-        ]
+    for cluster_std in [0.5, 1, 2, 5, 10, 100]:
+        for random_state in random_states:
+            clusterers = [
+#                MyKMeans(data=X, n_clusters=n_clusters, random_state=random_state),
+                MyExpectMax(data=X, n_clusters=n_clusters, random_state=random_state, cluster_std=cluster_std)
+            ]
 
-        for clusterer in clusterers:
-            start_time = time.time()
-            cluster_labels, centers, iters = clusterer.run()
-            elapsed = round(time.time() - start_time, 3)
-            score = silhouette_score(X, cluster_labels)
+            for clusterer in clusterers:
+                start_time = time.time()
+                cluster_labels, centers, iters = clusterer.run()
+                elapsed = round(time.time() - start_time, 3)
+                score = silhouette_score(X, cluster_labels)
 
-            alg = clusterer.__class__.__name__
+                alg = clusterer.__class__.__name__
 
-#            scatter_stuff(X, cluster_labels, centers, alg)
+#                scatter_stuff(X, cluster_labels, centers, alg)
 
-            if score > metrics[alg]['score'] or \
-               (score == metrics[alg]['score'] and \
-               (iters < metrics[alg]['iters'] or elapsed < metrics[alg]['elapsed'])):
-                metrics[alg]['score'] = score
-                metrics[alg]['n_clusters'] = n_clusters
-                metrics[alg]['random_state'] = random_state
-                metrics[alg]['iters'] = iters
-                metrics[alg]['elapsed'] = elapsed
-#                metrics[alg]['error'] = lowest_label_error(cluster_labels, y)
+                if score > metrics[alg]['score'] or \
+                   (score == metrics[alg]['score'] and \
+                   (iters < metrics[alg]['iters'] or elapsed < metrics[alg]['elapsed'])):
+                    metrics[alg]['score'] = score
+                    metrics[alg]['n_clusters'] = n_clusters
+                    metrics[alg]['random_state'] = random_state
+                    metrics[alg]['iters'] = iters
+                    metrics[alg]['elapsed'] = elapsed
+                    metrics[alg]['cluster_std'] = cluster_std
+    #                metrics[alg]['error'] = lowest_label_error(cluster_labels, y)
 
-            if score > best_score[alg]:
-                best_score[alg] = score
+                if score > best_score[alg]:
+                    best_score[alg] = score
 
-    k_means_scores.append(best_score['MyKMeans'])
-    expexct_max_scores.append(best_score['MyExpectMax'])
-    cluster_counts.append(n_clusters)
+        k_means_scores.append(best_score['MyKMeans'])
+        expexct_max_scores.append(best_score['MyExpectMax'])
+        cluster_counts.append(n_clusters)
 
 print('total_elapsed:', time.time() - total_start_time)
 print('k_means_scores:', k_means_scores)
