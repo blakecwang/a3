@@ -24,7 +24,7 @@ def scatter_stuff(X, y, centers, name):
 def plot_stuff(cluster_counts, k_means, expect_max, name):
     font = { 'family': 'Arial', 'size': 18 }
     plt.rc('font', **font)
-    plt.plot(cluster_counts, k_means, label='MyKMeans')
+#    plt.plot(cluster_counts, k_means, label='MyKMeans')
     plt.plot(cluster_counts, expect_max, label='MyExpectMax')
     plt.ylabel('Average Silhouette', fontsize=18, fontname='Arial')
     plt.xlabel('Clusters', fontsize=18, fontname='Arial')
@@ -66,8 +66,7 @@ X = np.array(train.drop(target, axis=1))
 #print('score:', silhouette_score(X, y))
 
 np.random.seed(11)
-#random_states = np.random.choice(range(1000), size=5, replace=False)
-random_states =  [464]
+random_states = np.random.choice(range(1000), size=5, replace=False)
 
 metrics = {
     'MyKMeans': {'score': -1},
@@ -80,20 +79,21 @@ cluster_counts = []
 total_start_time = time.time()
 for n_clusters in range(2, 12):
     best_score = {'MyKMeans': -1, 'MyExpectMax': -1}
-    for cluster_std in [1000]:
-        for random_state in random_states:
+    for cluster_std in [100, 500, 1000]:
+        for random_state in [464]:
+#        for random_state in random_states:
             clusterers = [
-                MyKMeans(data=X, n_clusters=n_clusters, random_state=25),
+#                MyKMeans(data=X, n_clusters=n_clusters, random_state=random_state),
                 MyExpectMax(data=X, n_clusters=n_clusters, random_state=random_state, cluster_std=cluster_std)
             ]
 
             for clusterer in clusterers:
-                alg = clusterer.__class__.__name__
-
                 start_time = time.time()
                 cluster_labels, centers, iters = clusterer.run()
                 elapsed = round(time.time() - start_time, 3)
                 score = silhouette_score(X, cluster_labels)
+
+                alg = clusterer.__class__.__name__
 
 #                scatter_stuff(X, cluster_labels, centers, alg)
 
