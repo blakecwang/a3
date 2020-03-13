@@ -7,6 +7,8 @@ import numpy as np
 from sklearn.datasets import make_blobs
 from sklearn.decomposition import PCA, FastICA
 
+RS = 11
+
 target = 'quality'
 train = pd.read_csv(f'wine_train.csv')
 test = pd.read_csv(f'wine_test.csv')
@@ -21,15 +23,15 @@ X = np.array(train.drop(target, axis=1))
 #    random_state=11
 #)
 
-#print(X.shape)
-#print(X)
-#print('-')
 
-pca = PCA(n_components=0.95)
-pca.fit(X)
-X = pca.transform(X)
+#print('PCA')
+#print('before', X.shape)
+#transformer = PCA(n_components=0.95, random_state=RS)
+#X = transformer.fit_transform(X)
+#print('after', X.shape)
+#print(transformer.explained_variance_ratio_)
+#print('')
 
-print(X.shape)
-print(pca.components_)
-print(pca.explained_variance_ratio_)
-#print(X)
+print('FastICA')
+transformer = FastICA(random_state=RS)
+X = transformer.fit_transform(X)
