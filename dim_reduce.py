@@ -35,21 +35,25 @@ full = pd.concat([train, test])
 y = np.array(train.loc[:, target])
 X = np.array(train.drop(target, axis=1))
 
-X, y = make_blobs(
-    centers=6,
-    n_features=2,
-    n_samples=1000,
-    random_state=11
-)
+#X, y = make_blobs(
+#    centers=6,
+#    n_features=2,
+#    n_samples=1000,
+#    random_state=11
+#)
 
 
-#print('PCA')
-#print('before', X.shape)
+print('PCA')
+print('before', X.shape)
+transformer = PCA(n_components=X.shape[1] - 1, random_state=RS)
 #transformer = PCA(n_components=0.95, random_state=RS)
-#X = transformer.fit_transform(X)
-#print('after', X.shape)
-#print(transformer.explained_variance_ratio_)
-#print('')
+X = transformer.fit_transform(X)
+print('after', X.shape)
+print(transformer.explained_variance_ratio_)
+print('sv')
+print(transformer.singular_values_)
+print('')
+exit()
 
 #print('FastICA')
 #for i in range(X.shape[1]):
