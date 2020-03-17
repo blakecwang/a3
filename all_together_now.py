@@ -53,8 +53,11 @@ def lowest_label_error(labels1, labels2):
 
 RS = 11
 
+
 # Wine Quality
 name = 'wq'
+n_clusters = 2
+cluster_std = 10000
 target = 'quality'
 train = pd.read_csv(f'wine_train.csv')
 test = pd.read_csv(f'wine_test.csv')
@@ -62,14 +65,16 @@ full = pd.concat([train, test])
 y = np.array(train.loc[:,target])
 X = np.array(train.drop(target, axis=1))
 transformers = [
-    PCA(n_components=1, random_state=RS),
+#    PCA(n_components=1, random_state=RS),
     FastICA(random_state=RS),
-    GaussianRandomProjection(random_state=RS, n_components=9),
-    TruncatedSVD(n_components=1, random_state=RS)
+#    GaussianRandomProjection(random_state=RS, n_components=9),
+#    TruncatedSVD(n_components=1, random_state=RS)
 ]
 
 ## Generated Blobs
 #name = 'gb'
+#n_clusters = 6
+#cluster_std = 1
 #X, y = make_blobs(
 #    centers=6,
 #    n_features=2,
@@ -84,78 +89,60 @@ transformers = [
 #]
 
 np.random.seed(RS)
-random_states = np.random.choice(range(1000), size=5, replace=False)
-
-metrics = {
-    'MyKMeans': {'score': -1},
-    'MyExpectMax': {'score': -1}
-}
-
-k_means_scores = []
-expexct_max_scores = []
-cluster_counts = []
+#random_states = np.random.choice(range(1000), size=5, replace=False)
+random_states = [730]
 total_start_time = time.time()
-
-best_score = {
-    'PCA_MyKMeans': -1,
-    'PCA_MyExpectMax': -1,
-    'FastICA_MyKMeans': -1,
-    'FastICA_MyExpectMax': -1,
-    'GaussianRandomProjection_MyKMeans': -1,
-    'GaussianRandomProjection_MyExpectMax': -1,
-    'TruncatedSVD_MyKMeans': -1,
-    'TruncatedSVD_MyExpectMax': -1
+metrics = {
+    'PCA_MyKMeans': {'best_score': -1},
+    'PCA_MyExpectMax': {'best_score': -1},
+    'FastICA_MyKMeans': {'best_score': -1},
+    'FastICA_MyExpectMax': {'best_score': -1},
+    'GaussianRandomProjection_MyKMeans': {'best_score': -1},
+    'GaussianRandomProjection_MyExpectMax': {'best_score': -1},
+    'TruncatedSVD_MyKMeans': {'best_score': -1},
+    'TruncatedSVD_MyExpectMax': {'best_score': -1}
 }
+clusterers = [
+#    'MyKMeans',
+    'MyExpectMax'
+]
 
-for transformer in transformers:
-    tf_name = transformer.__class__.__name__
-    X_new = transformer.fit_transform(X)
-    for rs in random_states:
-        if name is 'gb':
-            n_clusters = 6
-        else:
-            n_clusters = 2
-
-        clusterers = [
-            MyKMeans(data=X_new, n_clusters=n_clusters, random_state=rs),
-            MyExpectMax(data=X_new, n_clusters=n_clusters, random_state=rs, cluster_std=10000)
-        ]
+try:
+    for transformer in transformers:
+        tf_name = transformer.__class__.__name__
+        X_new = transformer.fit_transform(X)
 
         for clusterer in clusterers:
-            alg = clusterer.__class__.__name__
-            key = f'{tf_name}_{alg}'
+            key = f'{tf_name}_{clusterer}'
             print(key)
-            continue
 
-            start_time = time.time()
-            cluster_labels, centers, iters = clusterer.run()
-            elapsed = round(time.time() - start_time, 3)
-            score = silhouette_score(X, cluster_labels)
+            for rs in random_states:
+                if clusterer is 'MyKMeans':
+                    clusterer = MyKMeans(data=X_new, n_clusters=n_clusters, random_state=rs)
+                else:
+                    clusterer = MyExpectMax(data=X_new, n_clusters=n_clusters, random_state=rs, cluster_std=10000)
 
-#                scatter_stuff(X, cluster_labels, centers, alg)
+                start_time = time.time()
+                cluster_labels, centers, iters = clusterer.run()
+#                print(np.unique(cluster_labels))
+#                print(rs)
+#                continue
+                elapsed = round(time.time() - start_time, 3)
+                score = silhouette_score(X_new, cluster_labels)
 
-            if score > metrics[alg]['score'] or \
-               (score == metrics[alg]['score'] and \
-               (iters < metrics[alg]['iters'] or elapsed < metrics[alg]['elapsed'])):
-                metrics[alg]['score'] = score
-                metrics[alg]['n_clusters'] = n_clusters
-                metrics[alg]['random_state'] = random_state
-                metrics[alg]['iters'] = iters
-                metrics[alg]['elapsed'] = elapsed
-                metrics[alg]['cluster_std'] = cluster_std
-#                metrics[alg]['error'] = lowest_label_error(cluster_labels, y)
-
-            if score > best_score[alg]:
-                best_score[alg] = score
-
-    k_means_scores.append(best_score['MyKMeans'])
-    expexct_max_scores.append(best_score['MyExpectMax'])
-    cluster_counts.append(n_clusters)
-
-#print('k_means_scores:', k_means_scores)
-#print('expexct_max_scores:', expexct_max_scores)
+                if score > metrics[key]['best_score'] or \
+                   (score == metrics[key]['best_score'] and \
+                   (iters < metrics[key]['iters'] or elapsed < metrics[key]['elapsed'])):
+                    metrics[key]['best_score'] = score
+                    metrics[key]['n_clusters'] = n_clusters
+                    metrics[key]['random_state'] = rs
+                    metrics[key]['iters'] = iters
+                    metrics[key]['elapsed'] = elapsed
+                    metrics[key]['cluster_std'] = cluster_std
+                    metrics[key]['error'] = lowest_label_error(cluster_labels, y)
+except Exception as e:
+    print('EXCEPTION!')
+    print(e)
 
 pprint.PrettyPrinter(indent=4).pprint(metrics)
 print('total_elapsed:', time.time() - total_start_time)
-
-plot_stuff(cluster_counts, k_means_scores, expexct_max_scores, 'wine')
