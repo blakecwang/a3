@@ -54,43 +54,42 @@ def lowest_label_error(labels1, labels2):
 RS = 11
 
 
-# Wine Quality
-name = 'wq'
-n_clusters = 2
-cluster_std = 10000
-target = 'quality'
-train = pd.read_csv(f'wine_train.csv')
-test = pd.read_csv(f'wine_test.csv')
-full = pd.concat([train, test])
-y = np.array(train.loc[:,target])
-X = np.array(train.drop(target, axis=1))
-transformers = [
-#    PCA(n_components=1, random_state=RS),
-    FastICA(random_state=RS),
-#    GaussianRandomProjection(random_state=RS, n_components=9),
-#    TruncatedSVD(n_components=1, random_state=RS)
-]
-
-## Generated Blobs
-#name = 'gb'
-#n_clusters = 6
-#cluster_std = 1
-#X, y = make_blobs(
-#    centers=6,
-#    n_features=2,
-#    n_samples=1000,
-#    random_state=11
-#)
+## Wine Quality
+#name = 'wq'
+#n_clusters = 2
+#cluster_std = 10000
+#target = 'quality'
+#train = pd.read_csv(f'wine_train.csv')
+#test = pd.read_csv(f'wine_test.csv')
+#full = pd.concat([train, test])
+#y = np.array(train.loc[:,target])
+#X = np.array(train.drop(target, axis=1))
 #transformers = [
 #    PCA(n_components=1, random_state=RS),
 #    FastICA(random_state=RS),
-#    GaussianRandomProjection(random_state=rs, n_components=1),
+#    GaussianRandomProjection(random_state=RS, n_components=9),
 #    TruncatedSVD(n_components=1, random_state=RS)
 #]
 
+# Generated Blobs
+name = 'gb'
+n_clusters = 6
+cluster_std = 1
+X, y = make_blobs(
+    centers=6,
+    n_features=2,
+    n_samples=1000,
+    random_state=11
+)
+transformers = [
+    PCA(n_components=1, random_state=RS),
+    FastICA(random_state=RS),
+    GaussianRandomProjection(random_state=RS, n_components=1),
+    TruncatedSVD(n_components=1, random_state=RS)
+]
+
 np.random.seed(RS)
-#random_states = np.random.choice(range(1000), size=5, replace=False)
-random_states = [730]
+random_states = np.random.choice(range(1000), size=5, replace=False)
 total_start_time = time.time()
 metrics = {
     'PCA_MyKMeans': {'best_score': -1},
@@ -103,20 +102,24 @@ metrics = {
     'TruncatedSVD_MyExpectMax': {'best_score': -1}
 }
 clusterers = [
-#    'MyKMeans',
+    'MyKMeans',
     'MyExpectMax'
 ]
 
-try:
-    for transformer in transformers:
-        tf_name = transformer.__class__.__name__
-        X_new = transformer.fit_transform(X)
+for transformer in transformers:
+    tf_name = transformer.__class__.__name__
+    X_new = transformer.fit_transform(X)
 
-        for clusterer in clusterers:
+    for clusterer in clusterers:
+        try:
             key = f'{tf_name}_{clusterer}'
             print(key)
 
             for rs in random_states:
+                # hack for weird behavior
+                if name is 'wq' and key is 'FastICA_MyExpectMax' and rs is not 730:
+                    continue
+
                 if clusterer is 'MyKMeans':
                     clusterer = MyKMeans(data=X_new, n_clusters=n_clusters, random_state=rs)
                 else:
@@ -124,9 +127,9 @@ try:
 
                 start_time = time.time()
                 cluster_labels, centers, iters = clusterer.run()
-#                print(np.unique(cluster_labels))
-#                print(rs)
-#                continue
+    #                print(np.unique(cluster_labels))
+    #                print(rs)
+    #                continue
                 elapsed = round(time.time() - start_time, 3)
                 score = silhouette_score(X_new, cluster_labels)
 
@@ -140,9 +143,9 @@ try:
                     metrics[key]['elapsed'] = elapsed
                     metrics[key]['cluster_std'] = cluster_std
                     metrics[key]['error'] = lowest_label_error(cluster_labels, y)
-except Exception as e:
-    print('EXCEPTION!')
-    print(e)
+        except Exception as e:
+            print('EXCEPTION!')
+            print(e)
 
 pprint.PrettyPrinter(indent=4).pprint(metrics)
 print('total_elapsed:', time.time() - total_start_time)
