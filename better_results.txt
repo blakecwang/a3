@@ -1,0 +1,16 @@
+PCA_MyKMeans
+{   'FastICA_MyExpectMax': {'best_score': -1},
+    'FastICA_MyKMeans': {'best_score': -1},
+    'GaussianRandomProjection_MyExpectMax': {'best_score': -1},
+    'GaussianRandomProjection_MyKMeans': {'best_score': -1},
+    'PCA_MyExpectMax': {'best_score': -1},
+    'PCA_MyKMeans': {   'best_score': 0.5469317505088549,
+                        'cluster_std': 10000,
+                        'elapsed': 23.991,
+                        'error': 0.0017866258295048494,
+                        'iters': 63,
+                        'n_clusters': 7,
+                        'random_state': 25},
+    'TruncatedSVD_MyExpectMax': {'best_score': -1},
+    'TruncatedSVD_MyKMeans': {'best_score': -1}}
+total_elapsed: 278.21365094184875
