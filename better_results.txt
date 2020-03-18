@@ -1,16 +1,139 @@
+######### wine quality #########
+
+
 PCA_MyKMeans
-{   'FastICA_MyExpectMax': {'best_score': -1},
-    'FastICA_MyKMeans': {'best_score': -1},
-    'GaussianRandomProjection_MyExpectMax': {'best_score': -1},
-    'GaussianRandomProjection_MyKMeans': {'best_score': -1},
-    'PCA_MyExpectMax': {'best_score': -1},
+PCA_MyExpectMax
+FastICA_MyKMeans
+FastICA_MyExpectMax
+GaussianRandomProjection_MyKMeans
+GaussianRandomProjection_MyExpectMax
+TruncatedSVD_MyKMeans
+TruncatedSVD_MyExpectMax
+{   'FastICA_MyExpectMax': {   'best_score': -0.029308401987576897,
+                               'cluster_std': 10000,
+                               'elapsed': 1.225,
+                               'error': 0.0017866258295048494,
+                               'iters': 2,
+                               'n_clusters': 7,
+                               'random_state': 372},
+    'FastICA_MyKMeans': {   'best_score': 0.08404089742716317,
+                            'cluster_std': 10000,
+                            'elapsed': 19.007,
+                            'error': 0.0017866258295048494,
+                            'iters': 51,
+                            'n_clusters': 7,
+                            'random_state': 25},
+    'GaussianRandomProjection_MyExpectMax': {   'best_score': 0.5383514154339833,
+                                                'cluster_std': 10000,
+                                                'elapsed': 48.886,
+                                                'error': 0.0017866258295048494,
+                                                'iters': 73,
+                                                'n_clusters': 7,
+                                                'random_state': 464},
+    'GaussianRandomProjection_MyKMeans': {   'best_score': 0.5383834456180101,
+                                             'cluster_std': 10000,
+                                             'elapsed': 22.89,
+                                             'error': 0.0017866258295048494,
+                                             'iters': 69,
+                                             'n_clusters': 7,
+                                             'random_state': 25},
+    'PCA_MyExpectMax': {   'best_score': 0.5468071672169886,
+                           'cluster_std': 10000,
+                           'elapsed': 66.626,
+                           'error': 0.0017866258295048494,
+                           'iters': 100,
+                           'n_clusters': 7,
+                           'random_state': 372},
     'PCA_MyKMeans': {   'best_score': 0.5469317505088549,
                         'cluster_std': 10000,
-                        'elapsed': 23.991,
+                        'elapsed': 23.413,
                         'error': 0.0017866258295048494,
                         'iters': 63,
                         'n_clusters': 7,
                         'random_state': 25},
-    'TruncatedSVD_MyExpectMax': {'best_score': -1},
-    'TruncatedSVD_MyKMeans': {'best_score': -1}}
-total_elapsed: 278.21365094184875
+    'TruncatedSVD_MyExpectMax': {   'best_score': 0.5467355973099253,
+                                    'cluster_std': 10000,
+                                    'elapsed': 64.11,
+                                    'error': 0.0017866258295048494,
+                                    'iters': 100,
+                                    'n_clusters': 7,
+                                    'random_state': 372},
+    'TruncatedSVD_MyKMeans': {   'best_score': 0.546742110954915,
+                                 'cluster_std': 10000,
+                                 'elapsed': 29.098,
+                                 'error': 0.0017866258295048494,
+                                 'iters': 66,
+                                 'n_clusters': 7,
+                                 'random_state': 25}}
+total_elapsed: 1785.305685043335
+
+
+
+######### generated blobs #########
+
+
+PCA_MyKMeans
+PCA_MyExpectMax
+FastICA_MyKMeans
+FastICA_MyExpectMax
+GaussianRandomProjection_MyKMeans
+GaussianRandomProjection_MyExpectMax
+TruncatedSVD_MyKMeans
+TruncatedSVD_MyExpectMax
+{   'FastICA_MyExpectMax': {   'best_score': 0.16812343545348557,
+                               'cluster_std': 1,
+                               'elapsed': 0.31,
+                               'error': 0.005,
+                               'iters': 2,
+                               'n_clusters': 6,
+                               'random_state': 25},
+    'FastICA_MyKMeans': {   'best_score': 0.6504151772540131,
+                            'cluster_std': 1,
+                            'elapsed': 0.532,
+                            'error': 0.003,
+                            'iters': 6,
+                            'n_clusters': 6,
+                            'random_state': 25},
+    'GaussianRandomProjection_MyExpectMax': {   'best_score': 0.6235473346583699,
+                                                'cluster_std': 1,
+                                                'elapsed': 0.393,
+                                                'error': 0.002,
+                                                'iters': 3,
+                                                'n_clusters': 6,
+                                                'random_state': 757},
+    'GaussianRandomProjection_MyKMeans': {   'best_score': 0.6248313919545958,
+                                             'cluster_std': 1,
+                                             'elapsed': 0.906,
+                                             'error': 0.006,
+                                             'iters': 10,
+                                             'n_clusters': 6,
+                                             'random_state': 25},
+    'PCA_MyExpectMax': {   'best_score': 0.5007811974833879,
+                           'cluster_std': 1,
+                           'elapsed': 0.426,
+                           'error': 0.002,
+                           'iters': 3,
+                           'n_clusters': 6,
+                           'random_state': 464},
+    'PCA_MyKMeans': {   'best_score': 0.6682578089232606,
+                        'cluster_std': 1,
+                        'elapsed': 0.688,
+                        'error': 0.005,
+                        'iters': 8,
+                        'n_clusters': 6,
+                        'random_state': 25},
+    'TruncatedSVD_MyExpectMax': {   'best_score': 0.5018329901410693,
+                                    'cluster_std': 1,
+                                    'elapsed': 0.399,
+                                    'error': 0.002,
+                                    'iters': 3,
+                                    'n_clusters': 6,
+                                    'random_state': 464},
+    'TruncatedSVD_MyKMeans': {   'best_score': 0.6692438214682643,
+                                 'cluster_std': 1,
+                                 'elapsed': 1.067,
+                                 'error': 0.005,
+                                 'iters': 11,
+                                 'n_clusters': 6,
+                                 'random_state': 25}}
+total_elapsed: 17.837146043777466

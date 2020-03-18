@@ -58,37 +58,37 @@ def lowest_label_error(labels1, labels2):
 
 RS = 11
 
-# Wine Quality
-name = 'wq'
-cluster_std = 10000
-target = 'quality'
-train = pd.read_csv(f'wine_train.csv')
-test = pd.read_csv(f'wine_test.csv')
-full = pd.concat([train, test])
-y = np.array(train.loc[:,target])
-X = np.array(train.drop(target, axis=1))
-transformers = [
-    PCA(n_components=1, random_state=RS),
-#    FastICA(random_state=RS),
-#    GaussianRandomProjection(random_state=RS, n_components=9),
-#    TruncatedSVD(n_components=1, random_state=RS)
-]
-
-## Generated Blobs
-#name = 'gb'
-#cluster_std = 1
-#X, y = make_blobs(
-#    centers=6,
-#    n_features=2,
-#    n_samples=1000,
-#    random_state=11
-#)
+## Wine Quality
+#name = 'wq'
+#cluster_std = 10000
+#target = 'quality'
+#train = pd.read_csv(f'wine_train.csv')
+#test = pd.read_csv(f'wine_test.csv')
+#full = pd.concat([train, test])
+#y = np.array(train.loc[:,target])
+#X = np.array(train.drop(target, axis=1))
 #transformers = [
 #    PCA(n_components=1, random_state=RS),
 #    FastICA(random_state=RS),
-#    GaussianRandomProjection(random_state=RS, n_components=1),
+#    GaussianRandomProjection(random_state=RS, n_components=9),
 #    TruncatedSVD(n_components=1, random_state=RS)
 #]
+
+# Generated Blobs
+name = 'gb'
+cluster_std = 1
+X, y = make_blobs(
+    centers=6,
+    n_features=2,
+    n_samples=1000,
+    random_state=11
+)
+transformers = [
+    PCA(n_components=1, random_state=RS),
+    FastICA(random_state=RS),
+    GaussianRandomProjection(random_state=RS, n_components=1),
+    TruncatedSVD(n_components=1, random_state=RS)
+]
 
 np.random.seed(RS)
 random_states = np.random.choice(range(1000), size=5, replace=False)
@@ -106,7 +106,7 @@ metrics = {
 }
 clusterers = [
     'MyKMeans',
-#    'MyExpectMax'
+    'MyExpectMax'
 ]
 
 for transformer in transformers:
