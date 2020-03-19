@@ -44,11 +44,14 @@ def lowest_label_error(labels1, labels2):
 
     lowest_error = np.inf
     for masks2_perm in itertools.permutations(masks2):
-        error = np.count_nonzero(masks1 != masks2_perm)
+        masks2_perm = np.array(masks2_perm)
+        error = 0
+        for i in range(masks1.shape[0]):
+            if not np.array_equal(masks1[i], masks2_perm[i]):
+                error += 1
         if error < lowest_error:
             lowest_error = error
-    return lowest_error
-
+    return lowest_error / labels1.shape[0]
 
 target = 'quality'
 train = pd.read_csv(f'wine_train.csv')
@@ -66,8 +69,8 @@ X = np.array(train.drop(target, axis=1))
 #print('score:', silhouette_score(X, y))
 
 np.random.seed(11)
-#random_states = np.random.choice(range(1000), size=5, replace=False)
-random_states =  [25]
+random_states = np.random.choice(range(1000), size=5, replace=False)
+#random_states =  [25]
 
 metrics = {
     'MyKMeans': {'score': -1},
@@ -115,8 +118,8 @@ for n_clusters in range(2, 12):
         expexct_max_scores.append(best_score['MyExpectMax'])
         cluster_counts.append(n_clusters)
 
-#print('k_means_scores:', k_means_scores)
-#print('expexct_max_scores:', expexct_max_scores)
+print('k_means_scores:', k_means_scores)
+print('expexct_max_scores:', expexct_max_scores)
 
 pprint.PrettyPrinter(indent=4).pprint(metrics)
 print('total_elapsed:', time.time() - total_start_time)

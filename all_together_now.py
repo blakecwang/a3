@@ -36,25 +36,35 @@ def plot_stuff(cluster_counts, k_means, expect_max, name):
 #    plt.show()
 
 def lowest_label_error(labels1, labels2):
-    n_labels = np.unique(labels1).shape[0]
+    # Get arrays of unique labels.
+    unique_labels1 = np.unique(labels1)
+    unique_labels2 = np.unique(labels2)
+
+    # Check that the two inputs have the same number of unique labels.
+    n_labels = unique_labels1.shape[0]
+    if n_labels is not unique_labels2.shape[0]:
+        raise Exception('oh no! labels are not the same length!')
+
+    # Init empty masks.
     masks1 = np.zeros((n_labels, labels1.shape[0]), dtype=bool)
     masks2 = np.copy(masks1)
-    for i in range(n_labels):
-        masks1[i] = np.array([label == i for label in labels1])
-    for i in range(n_labels):
-        masks2[i] = np.array([label == i for label in labels2])
 
+    # Create an array for each unique value and add it to a mask.
+    for i in range(n_labels):
+        masks1[i] = np.array([label == unique_labels1[i] for label in labels1])
+    for i in range(n_labels):
+        masks2[i] = np.array([label == unique_labels2[i] for label in labels2])
+
+    # Find the lowest error between mask1 and every permutation of mask2.
     lowest_error = np.inf
     for masks2_perm in itertools.permutations(masks2):
         masks2_perm = np.array(masks2_perm)
-        error = 0
-        for i in range(masks1.shape[0]):
-            if not np.array_equal(masks1[i], masks2_perm[i]):
-                error += 1
+        error = np.count_nonzero(masks1 != masks2_perm)
         if error < lowest_error:
             lowest_error = error
-    return lowest_error / labels1.shape[0]
 
+    # Return the error percentage.
+    return lowest_error / masks1.size
 
 RS = 11
 
