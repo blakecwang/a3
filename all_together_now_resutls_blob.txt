@@ -1,0 +1,87 @@
+NoneType_MyKMeans
+NoneType_MyExpectMax
+PCA_MyKMeans
+PCA_MyExpectMax
+FastICA_MyKMeans
+FastICA_MyExpectMax
+oh no! unique labels are not the same length!
+n_unique_labels1 6
+n_unique_labels2 4
+oh no! unique labels are not the same length!
+n_unique_labels1 6
+n_unique_labels2 4
+GaussianRandomProjection_MyKMeans
+GaussianRandomProjection_MyExpectMax
+TruncatedSVD_MyKMeans
+TruncatedSVD_MyExpectMax
+{   'FastICA_MyExpectMax': {   'best_score': 0.3677366152269023,
+                               'cluster_std': 1,
+                               'elapsed': 0.272,
+                               'error': 0.145,
+                               'iters': 2,
+                               'n_clusters': 6,
+                               'random_state': 464},
+    'FastICA_MyKMeans': {   'best_score': 0.6504151772540131,
+                            'cluster_std': 1,
+                            'elapsed': 0.464,
+                            'error': 0.08,
+                            'iters': 6,
+                            'n_clusters': 6,
+                            'random_state': 25},
+    'GaussianRandomProjection_MyExpectMax': {   'best_score': 0.651667140443939,
+                                                'cluster_std': 1,
+                                                'elapsed': 0.789,
+                                                'error': 0.139,
+                                                'iters': 6,
+                                                'n_clusters': 6,
+                                                'random_state': 730},
+    'GaussianRandomProjection_MyKMeans': {   'best_score': 0.651667140443939,
+                                             'cluster_std': 1,
+                                             'elapsed': 0.812,
+                                             'error': 0.139,
+                                             'iters': 6,
+                                             'n_clusters': 6,
+                                             'random_state': 730},
+    'NoneType_MyExpectMax': {   'best_score': 0.7502547601018824,
+                                'cluster_std': 1,
+                                'elapsed': 0.677,
+                                'error': 0.0016666666666666668,
+                                'iters': 5,
+                                'n_clusters': 6,
+                                'random_state': 372},
+    'NoneType_MyKMeans': {   'best_score': 0.7502547601018824,
+                             'cluster_std': 1,
+                             'elapsed': 0.661,
+                             'error': 0.0016666666666666668,
+                             'iters': 5,
+                             'n_clusters': 6,
+                             'random_state': 372},
+    'PCA_MyExpectMax': {   'best_score': 0.678108216162697,
+                           'cluster_std': 1,
+                           'elapsed': 0.736,
+                           'error': 0.08766666666666667,
+                           'iters': 5,
+                           'n_clusters': 6,
+                           'random_state': 730},
+    'PCA_MyKMeans': {   'best_score': 0.678108216162697,
+                        'cluster_std': 1,
+                        'elapsed': 0.669,
+                        'error': 0.08766666666666667,
+                        'iters': 5,
+                        'n_clusters': 6,
+                        'random_state': 730},
+    'TruncatedSVD_MyExpectMax': {   'best_score': 0.6799668295123253,
+                                    'cluster_std': 1,
+                                    'elapsed': 0.668,
+                                    'error': 0.088,
+                                    'iters': 5,
+                                    'n_clusters': 6,
+                                    'random_state': 730},
+    'TruncatedSVD_MyKMeans': {   'best_score': 0.6799668295123253,
+                                 'cluster_std': 1,
+                                 'elapsed': 0.697,
+                                 'error': 0.088,
+                                 'iters': 5,
+                                 'n_clusters': 6,
+                                 'random_state': 730}}
+total_elapsed: 46.27288508415222

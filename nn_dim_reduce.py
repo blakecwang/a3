@@ -10,6 +10,7 @@ from sklearn.decomposition import PCA, FastICA, TruncatedSVD
 from sklearn.random_projection import GaussianRandomProjection
 from sklearn.model_selection import GridSearchCV
 from sklearn.neural_network import MLPClassifier
+#from sklearn.model_selection import cross_val_score
 
 def plot_stuff(cluster_counts, k_means, expect_max, name):
     font = { 'family': 'Arial', 'size': 18 }
@@ -72,7 +73,7 @@ X_test = test.drop(target, axis=1)
 transformers = [
     None,
     PCA(n_components=1, random_state=RS),
-#    FastICA(random_state=RS),
+    FastICA(random_state=RS),
     GaussianRandomProjection(random_state=RS, n_components=9),
     TruncatedSVD(n_components=1, random_state=RS)
 ]
@@ -90,49 +91,46 @@ metrics = {
 
 for transformer in transformers:
     # Transform the data (or not).
-    transform_start_time = time.time()
     if transformer is None:
         key = 'None'
         X_train_new = np.copy(X_train)
         X_test_new = np.copy(X_test)
     else:
         key = transformer.__class__.__name__
+        transform_start_time = time.time()
         transformer.fit(X_train)
         X_train_new = transformer.transform(X_train)
         X_test_new = transformer.transform(X_test)
-    transform_time = round(time.time() - transform_start_time, 3)
+        metrics[key]['transform_time'] = round(time.time() - transform_start_time, 3)
     print(key)
 
     try:
         # Perform a grid seach to find the best hyper parameters.
         grid = {
             'random_state': [RS],
-            'hidden_layer_sizes': [(100,)],
+            'hidden_layer_sizes': [(5,), (10,), (50,), (100,)],
             'alpha': [0.0001, 0.0002, 0.0003, 0.0004],
-            'learning_rate_init': [0.001, 0.002, 0.003, 0.004],
+            'learning_rate_init': [1e-4, 1e-3, 1e-2],
             'max_iter': [500]
         }
         clf = GridSearchCV(MLPClassifier(), grid, n_jobs=-1, cv=5)
         grid_start_time = time.time()
         clf.fit(X_train_new, y_train)
-        grid_time = round(time.time() - grid_start_time, 3)
-
-        # Write down the best validatoin score from grid search.
-        metrics[key]['grid_cv_score'] = clf.cv_results_['mean_test_score']
-        print(metrics[key]['grid_cv_score'])
+        metrics[key]['grid_time'] = round(time.time() - grid_start_time, 3)
+        metrics[key]['best_params'] = clf.best_params_
 
         # Define new classifier based on best hyperparamters
         clf = MLPClassifier(**clf.best_params_)
 
         # Train the new classifier on all training data.
         train_start_time = time.time()
-        train_time = round(time.time() - train_start_time, 3)
+        clf.fit(X_train_new, y_train)
+        metrics[key]['iters'] = clf.n_iter_
+        metrics[key]['train_time'] = round(time.time() - train_start_time, 3)
 
-        metrics[key]['accuracy'] = accuracy
-        metrics[key]['iters'] = iters
-        metrics[key]['transform_time'] = transform_time
-        metrics[key]['grid_time'] = grid_time
-        metrics[key]['train_time'] = train_time
+        # Calculate the final scores.
+        metrics[key]['final_train_score'] = clf.score(X_train_new, y_train)
+        metrics[key]['final_test_score'] = clf.score(X_test_new, y_test)
     except Exception as e:
         print('EXCEPTION!')
         print(e)
