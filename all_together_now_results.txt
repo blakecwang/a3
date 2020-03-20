@@ -1,3 +1,4 @@
+# blob
 NoneType_MyKMeans
 NoneType_MyExpectMax
 PCA_MyKMeans
@@ -85,3 +86,88 @@ TruncatedSVD_MyExpectMax
                                  'n_clusters': 6,
                                  'random_state': 730}}
 total_elapsed: 46.27288508415222
+
+
+
+# wine
+NoneType_MyKMeans
+	NoneType_MyExpectMax
+PCA_MyKMeans
+PCA_MyExpectMax
+FastICA_MyKMeans
+FastICA_MyExpectMax
+GaussianRandomProjection_MyKMeans
+GaussianRandomProjection_MyExpectMax
+TruncatedSVD_MyKMeans
+TruncatedSVD_MyExpectMax
+{   'FastICA_MyExpectMax': {   'best_score': -0.07859107168990948,
+                               'cluster_std': 10000,
+                               'elapsed': 1.205,
+                               'error': 0.17297454969736747,
+                               'iters': 2,
+                               'n_clusters': 7,
+                               'random_state': 730},
+    'FastICA_MyKMeans': {   'best_score': 0.08404089742716317,
+                            'cluster_std': 10000,
+                            'elapsed': 17.846,
+                            'error': 0.20797783125501348,
+                            'iters': 51,
+                            'n_clusters': 7,
+                            'random_state': 25},
+    'GaussianRandomProjection_MyExpectMax': {   'best_score': 0.5383514154339833,
+                                                'cluster_std': 10000,
+                                                'elapsed': 42.256,
+                                                'error': 0.23393859841026762,
+                                                'iters': 73,
+                                                'n_clusters': 7,
+                                                'random_state': 464},
+    'GaussianRandomProjection_MyKMeans': {   'best_score': 0.5383834456180101,
+                                             'cluster_std': 10000,
+                                             'elapsed': 21.411,
+                                             'error': 0.23386567490702254,
+                                             'iters': 69,
+                                             'n_clusters': 7,
+                                             'random_state': 25},
+    'NoneType_MyExpectMax': {   'best_score': 0.5279247377129471,
+                                'cluster_std': 10000,
+                                'elapsed': 59.323,
+                                'error': 0.23481368044920878,
+                                'iters': 100,
+                                'n_clusters': 7,
+                                'random_state': 372},
+    'NoneType_MyKMeans': {   'best_score': 0.5279247377129471,
+                             'cluster_std': 10000,
+                             'elapsed': 60.261,
+                             'error': 0.23481368044920878,
+                             'iters': 100,
+                             'n_clusters': 7,
+                             'random_state': 372},
+    'PCA_MyExpectMax': {   'best_score': 0.5468071672169886,
+                           'cluster_std': 10000,
+                           'elapsed': 59.034,
+                           'error': 0.23488660395245387,
+                           'iters': 100,
+                           'n_clusters': 7,
+                           'random_state': 372},
+    'PCA_MyKMeans': {   'best_score': 0.5469317505088549,
+                        'cluster_std': 10000,
+                        'elapsed': 23.987,
+                        'error': 0.2341573689200029,
+                        'iters': 63,
+                        'n_clusters': 7,
+                        'random_state': 25},
+    'TruncatedSVD_MyExpectMax': {   'best_score': 0.5467355973099253,
+                                    'cluster_std': 10000,
+                                    'elapsed': 57.705,
+                                    'error': 0.23525122146867936,
+                                    'iters': 100,
+                                    'n_clusters': 7,
+                                    'random_state': 372},
+    'TruncatedSVD_MyKMeans': {   'best_score': 0.546742110954915,
+                                 'cluster_std': 10000,
+                                 'elapsed': 24.313,
+                                 'error': 0.2345949099394735,
+                                 'iters': 66,
+                                 'n_clusters': 7,
+                                 'random_state': 25}}
+total_elapsed: 2174.9527747631073
