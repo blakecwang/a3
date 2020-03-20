@@ -43,6 +43,8 @@ def lowest_label_error(labels1, labels2):
     # Check that the two inputs have the same number of unique labels.
     n_labels = unique_labels1.shape[0]
     if n_labels is not unique_labels2.shape[0]:
+        print('unique_labels1', unique_labels1)
+        print('unique_labels2', unique_labels2)
         raise Exception('oh no! labels are not the same length!')
 
     # Init empty masks.
@@ -95,9 +97,9 @@ X, y = make_blobs(
 )
 transformers = [
     PCA(n_components=1, random_state=RS),
-    FastICA(random_state=RS),
-    GaussianRandomProjection(random_state=RS, n_components=1),
-    TruncatedSVD(n_components=1, random_state=RS)
+#    FastICA(random_state=RS),
+#    GaussianRandomProjection(random_state=RS, n_components=1),
+#    TruncatedSVD(n_components=1, random_state=RS)
 ]
 
 np.random.seed(RS)
@@ -115,13 +117,14 @@ metrics = {
     'TruncatedSVD_MyExpectMax': {'best_score': -1}
 }
 clusterers = [
-    'MyKMeans',
+#    'MyKMeans',
     'MyExpectMax'
 ]
 
 for transformer in transformers:
     tf_name = transformer.__class__.__name__
-    X_new = transformer.fit_transform(X)
+#    X_new = transformer.fit_transform(X)
+    X_new = np.copy(X)
 
     for clusterer in clusterers:
         try:
@@ -129,6 +132,7 @@ for transformer in transformers:
             print(key)
 
             for rs in random_states:
+                print('rs', rs)
                 # hack for weird behavior
                 if name is 'wq' and key is 'FastICA_MyExpectMax' and rs is not 730:
                     continue
@@ -152,7 +156,8 @@ for transformer in transformers:
                     metrics[key]['iters'] = iters
                     metrics[key]['elapsed'] = elapsed
                     metrics[key]['cluster_std'] = cluster_std
-                    metrics[key]['error'] = lowest_label_error(cluster_labels, y)
+#                    metrics[key]['error'] = lowest_label_error(cluster_labels, y)
+                    scatter_stuff(X_new, cluster_labels, centers, 'name')
         except Exception as e:
             print('EXCEPTION!')
             print(e)
