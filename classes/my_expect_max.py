@@ -26,6 +26,7 @@ class MyExpectMax:
             self.__calc_hidden_values()
             self.__find_new_centers()
             self.iters += 1
+        # Harden the clusters before returning.
         cluster_labels = np.array([np.argmax(row) for row in self.hidden_values])
         return cluster_labels, self.centers, self.iters
 
