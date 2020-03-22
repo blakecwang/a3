@@ -52,22 +52,22 @@ except Exception:
     print("please provide 'wq' or 'gb' as an argument")
     exit(1)
 
+print('original shape', X.shape)
+
 transformer = PCA(n_components=0.95, random_state=RS)
 X_pca = transformer.fit_transform(X)
-print('before', X.shape)
 print('after PCA', X_pca.shape)
 print('explained variance ratio', transformer.explained_variance_ratio_)
 print('sv', transformer.singular_values_)
-print('')
-
-for i in range(X.shape[1]):
-    hist_stuff(X[:,i], i, 'before', 'r')
-    hist_stuff(X_pca[:,i], i, 'pca', 'b')
-
-print('FastICA')
 transformer = FastICA(random_state=RS)
 X_ica = transformer.fit_transform(X)
 print('after FastICA', X_ica.shape)
 
 for i in range(X.shape[1]):
+    hist_stuff(X[:,i], i, 'before', 'r')
+
+for i in range(X_pca.shape[1]):
+    hist_stuff(X_pca[:,i], i, 'pca', 'b')
+
+for i in range(X_ica.shape[1]):
     hist_stuff(X_ica[:,i], i, 'ica', 'b')

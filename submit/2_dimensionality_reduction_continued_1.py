@@ -2,6 +2,7 @@
 
 import pandas as pd
 import numpy as np
+import sys
 from sklearn.random_projection import GaussianRandomProjection
 from scipy.spatial import distance
 from sklearn.datasets import make_blobs
@@ -24,21 +25,31 @@ def plot_stuff(x_vals, y_vals, name):
 
 RS = 11
 
-name = 'wq_random_project'
-target = 'quality'
-train = pd.read_csv(f'wine_train.csv')
-test = pd.read_csv(f'wine_test.csv')
-full = pd.concat([train, test])
-y = np.array(train.loc[:, target])
-X = np.array(train.drop(target, axis=1))
+try:
+    if sys.argv[1] == 'wq':
+        print('Using Wine Quality (WQ) dataset...')
+        name = 'wq_random_project'
+        target = 'quality'
+        train = pd.read_csv(f'wine_train.csv')
+        test = pd.read_csv(f'wine_test.csv')
+        full = pd.concat([train, test])
+        y = np.array(train.loc[:, target])
+        X = np.array(train.drop(target, axis=1))
+    elif sys.argv[1] == 'gb':
+        print('Using Generated Blobs (GB) dataset...')
+        name = 'gb_random_project'
+        X, y = make_blobs(
+            centers=6,
+            n_features=2,
+            n_samples=1000,
+            random_state=11
+        )
+    else:
+        raise Exception
+except Exception:
+    print("please provide 'wq' or 'gb' as an argument")
+    exit(1)
 
-name = 'gb_random_project'
-X, y = make_blobs(
-    centers=6,
-    n_features=2,
-    n_samples=1000,
-    random_state=11
-)
 
 n_pairs = 100
 np.random.seed(RS)
