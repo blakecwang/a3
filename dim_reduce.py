@@ -53,7 +53,7 @@ print(transformer.explained_variance_ratio_)
 print('sv')
 print(transformer.singular_values_)
 print('')
-exit()
+#exit()
 
 #print('FastICA')
 #for i in range(X.shape[1]):
@@ -93,7 +93,7 @@ for i in range(X.shape[1]):
 #    x = transformer.fit_transform(x)
 #    stat, p = shapiro(x)
 #    print('Statistics=%.3f, p=%.3f' % (stat, p))
-exit()
+#exit()
 
 from scipy.stats import normaltest
 x = X[:,9]
