@@ -18,6 +18,7 @@ GTID#: 903379610
     - pandas
     - sklearn
     - scipy
+3. Download the source code from https://drive.google.com/file/d/1JQTJ4m8tId8ZQnHjJDfkOWO_xxo1r_sU/view?usp=sharing
 
 ############## Run ##############
 
