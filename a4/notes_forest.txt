@@ -1,0 +1,21 @@
+https://piazza.com/class/k51r1vdohil5g3?cid=705
+plot your convergence to an optimal (value|reward|policy) against iterations
+an interesting problem reveals differences between algorithms 
+ideally you'd converge fairly quickly and reliably while still showing differences on a smaller number of states and then a larger number of states would reveal more of the practical underpinnings of each approach (model-based versus model-free, for example).
+
+P ( A x S x S ) = probability of transition
+wait (action 0)
+  probability(s0)  = p,   say 10%
+  probability(s+1) = 1-p, say 90%
+cut (action 1)
+  probability that you end up in s0 is 100%
+
+R ( S x A ) = reward of taking action A when it state S
+in first state
+  reward for either action is 0
+in middle states
+  reward(wait) = 0
+  reward(cut)  = 1
+in last state
+  reward(wait) = r1  # default 4
+  reward(cut)  = r2  # default 2
