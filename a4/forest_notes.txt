@@ -1,3 +1,8 @@
+
+/Users/blake/.pyenv/versions/3.8.2/lib/python3.8/site-packages/mdptoolbox/mdp.py 
+
+VI and PI are guaranteed to converge
+
 https://piazza.com/class/k51r1vdohil5g3?cid=705
 plot your convergence to an optimal (value|reward|policy) against iterations
 an interesting problem reveals differences between algorithms 
