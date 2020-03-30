@@ -24,6 +24,7 @@ n_vals = 10
 results = np.zeros((n_vals, 6))
 for i in range(n_vals):
     S = (i + 1) * 2
+#    S = (i + 1) * 200
 #    S = 2 ** (i+1)
     P, R = mdptoolbox.example.forest(S=S)
 
@@ -41,7 +42,7 @@ for i in range(n_vals):
         reward=R,
         discount=D
     )
-#    pi.setVerbose()
+    pi.setVerbose()
     pi.run()
 
     results[i,0] = S
