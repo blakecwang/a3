@@ -12,12 +12,33 @@ try:
 except Exception:
     print('no args')
 
-DIM = 5 # must satisfy 4x + 1
+#custom_map = [
+#    'SGHHH',
+#    'HHHHH',
+#    'HHHHH',
+#    'HHHHH',
+#    'HHHHH'
+#]
+#
+#custom_map = [
+#    'SFFF',
+#    'FHFH',
+#    'FFFH',
+#    'HFFG'
+#]
+#DIM=4
+#
+#custom_map = [
+#    'FF',
+#    'GS'
+#]
+#DIM=2
+
+DIM = 13 # must satisfy 4x + 1
 
 # +1 for frisbee
 # -1 for hole
 # 0 for frozen lake
-
 # Left: 0,
 # Down: 1,
 # Right: 2,
@@ -44,35 +65,12 @@ for i in range(DIM):
         mystr += LET[np_map[i,j]]
     custom_map.append(mystr)
 
-#custom_map = [
-#    'SGHHH',
-#    'HHHHH',
-#    'HHHHH',
-#    'HHHHH',
-#    'HHHHH'
-#]
-
-custom_map = [
-    'SFFF',
-    'FHFH',
-    'FFFH',
-    'HFFG'
-]
-DIM=4
-
-#custom_map = [
-#    'FF',
-#    'GS'
-#]
-#DIM=2
-
-print('-' * DIM)
-for line in custom_map:
-    print(line)
-print('-' * DIM)
+#print('-' * DIM)
+#for line in custom_map:
+#    print(line)
+#print('-' * DIM)
 
 env = gym.make('FrozenLake-v0', desc=custom_map, is_slippery=True)
-#env = gym.make('FrozenLake8x8-v0', is_slippery=True)
 
 nA, nS = env.nA, env.nS
 P = np.zeros([nA, nS, nS])
@@ -107,23 +105,23 @@ if stats:
     print('=======================')
     print('ValueIteration')
 #    print('vi.V', vi.V)
-    print('vi.policy', vi.policy)
+#    print('vi.policy', vi.policy)
     print('vi.iter', vi.iter)
     print('vi.time', vi.time)
     print('=======================')
     print('PolicyIteration')
 #    print('pi.V', pi.V)
-    print('pi.policy', pi.policy)
+#    print('pi.policy', pi.policy)
     print('pi.iter', pi.iter)
     print('pi.time', pi.time)
     print('=======================')
 print('same policy:', vi.policy == pi.policy)
 
-#DIR = 'LDRU'
-DIR = 'v>^<' # verified using 2x2
-for policy in [vi.policy, pi.policy]:
-    for i, d in enumerate(policy):
-        if i % DIM == 0:
-            print('')
-        print(DIR[d], end='')
-    print('')
+#DIR = 'LDRU' # from the example https://reinforcementlearning4.fun/2019/06/16/gym-tutorial-frozen-lake/
+#DIR = 'v>^<' # verified using 2x2
+#for policy in [vi.policy, pi.policy]:
+#    for i, d in enumerate(policy):
+#        if i % DIM == 0:
+#            print('')
+#        print(DIR[d], end='')
+#    print('')
