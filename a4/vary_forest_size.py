@@ -23,8 +23,8 @@ D = 0.95
 n_vals = 10
 results = np.zeros((n_vals, 6))
 for i in range(n_vals):
-    S = (i + 1) * 2
-#    S = (i + 1) * 200
+#    S = (i + 1) * 2
+    S = (i + 1) * 2000
 #    S = 2 ** (i+1)
     P, R = mdptoolbox.example.forest(S=S)
 
@@ -34,7 +34,7 @@ for i in range(n_vals):
         discount=D,
         max_iter=1000
     )
-#    vi.setVerbose()
+    vi.setVerbose()
     vi.run()
 
     pi = mdptoolbox.mdp.PolicyIteration(
