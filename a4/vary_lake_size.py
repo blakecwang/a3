@@ -6,6 +6,16 @@ import numpy as np
 import mdptoolbox, mdptoolbox.example
 import matplotlib.pyplot as plt
 
+#8x8
+#SFFFFFFF
+#FFFFFFFF
+#FFFHFFFF
+#FFFFFHFF
+#FFFHFFFF
+#FHHFFFHF
+#FHFFHFHF
+#FFFHFFFG
+
 def plot_stuff(x, y1, y2, y1_label, y2_label, xlabel, ylabel, name):
     plt.clf()
     font = { 'family': 'Times New Roman', 'size': 18 }
@@ -21,23 +31,24 @@ def plot_stuff(x, y1, y2, y1_label, y2_label, xlabel, ylabel, name):
 
 D = 0.95
 LET = 'HFSG'
+# LET = ' FSG'
 
 n_vals = 10
 results = np.zeros((n_vals, 6))
 for i in range(n_vals):
-    S = 4 * (i + 1) + 1
-    np_map = np.zeros((S, S), dtype=int)
+    S = 6 * i + 4
+    np_map = np.ones((S, S), dtype=int)
     toggle = True
-    for j in range(S):
+    hole_len = int(S * 0.3)
+    offset = S - hole_len
+    for j in range(S - 2):
         if j % 2 == 0:
-            np_map[j] = np.ones(S, dtype=int)
-        else:
-            idx = S - 1 if toggle else 0
-            np_map[j,idx] = 1
+            for k in range(hole_len):
+                np_map[j,(offset+k)%S] = 0
             toggle = not toggle
+            offset += int(S * 0.6)
     np_map[0,0] = 2
     np_map[S-1,S-1] = 3
-    print(np_map)
 
     custom_map = []
     for j in range(S):
@@ -45,6 +56,11 @@ for i in range(n_vals):
         for k in range(S):
             mystr += LET[np_map[j,k]]
         custom_map.append(mystr)
+
+#    for line in custom_map:
+#        print(line)
+#    print('')
+#    continue
 
     env = gym.make('FrozenLake-v0', desc=custom_map, is_slippery=True)
     nA, nS = env.nA, env.nS
@@ -64,11 +80,13 @@ for i in range(n_vals):
     print('R.shape', R.shape)
 
     vi = mdptoolbox.mdp.ValueIteration(P, R, D)
-    # vi.setVerbose()
+    vi.setVerbose()
+    print('================ VI,', 'S =', S)
     vi.run()
 
     pi = mdptoolbox.mdp.PolicyIteration(P, R, D)
-    #pi.setVerbose()
+    pi.setVerbose()
+    print('================ PI,', 'S =', S)
     pi.run()
 
     results[i,0] = S
