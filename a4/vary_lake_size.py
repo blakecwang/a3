@@ -16,6 +16,27 @@ import matplotlib.pyplot as plt
 #FHFFHFHF
 #FFFHFFFG
 
+def bar_stuff(x, y, xlabel, ylabel, name):
+#    x = [16,100,256,484,784,1156,1600,2116,2704,3364]
+#    y = np.array([0, 0, 0, 0.00413223, 0.01530612, 0.02595156, 0.07125, 0.13563327, 0.26849112, 0.35523187])
+
+    plt.clf()
+    font = { 'family': 'Times New Roman', 'size': 18 }
+    plt.rc('font', **font)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    str_x = []
+    for num in x:
+        str_x.append(str(num))
+    plt.xticks(rotation=45)
+    plt.bar(str_x,y)
+    plt.tight_layout()
+    plt.savefig(f"{name}.png")
+#    plt.show()
+
+#bar_stuff(None, None, 'States', 'VI-PI Policy Difference', 'lake_policy_diff')
+#exit()
+
 def plot_stuff(x, y1, y2, y1_label, y2_label, xlabel, ylabel, name):
     plt.clf()
     font = { 'family': 'Times New Roman', 'size': 18 }
@@ -76,25 +97,29 @@ for i in range(n_vals):
 
     env.close()
     mdptoolbox.util.check(P, R)
+    states = S * S
     print('P.shape', P.shape)
     print('R.shape', R.shape)
 
+    print('================ VI,', 'states =', states)
+    continue
+
     vi = mdptoolbox.mdp.ValueIteration(P, R, D)
     vi.setVerbose()
-    print('================ VI,', 'S =', S)
+    print('================ VI,', 'states =', states)
     vi.run()
 
     pi = mdptoolbox.mdp.PolicyIteration(P, R, D)
     pi.setVerbose()
-    print('================ PI,', 'S =', S)
+    print('================ PI,', 'states =', states)
     pi.run()
 
-    results[i,0] = S
+    results[i,0] = states
     results[i,1] = vi.iter
     results[i,2] = pi.iter
     results[i,3] = vi.time
     results[i,4] = pi.time
-    results[i,5] = vi.policy == pi.policy
+    results[i,5] = np.count_nonzero(np.array(vi.policy) != np.array(pi.policy)) / states
 
 plot_stuff(
     np.array(results[:,0], dtype=int),
