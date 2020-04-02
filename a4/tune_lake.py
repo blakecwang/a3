@@ -6,6 +6,11 @@ import numpy as np
 import mdptoolbox, mdptoolbox.example
 import matplotlib.pyplot as plt
 
+DIR = 'DRUL'
+LET = 'HFSG'
+S = 58
+STATES = S * S
+
 def plot_stuff(x, y1, y2, y1_label, y2_label, xlabel, ylabel, name):
     plt.clf()
     font = { 'family': 'Times New Roman', 'size': 18 }
@@ -19,10 +24,24 @@ def plot_stuff(x, y1, y2, y1_label, y2_label, xlabel, ylabel, name):
     plt.savefig(f"{name}.png")
     plt.show()
 
-#def walk(P, R, policy):
+# P (A × S × S)
+# R (S × A)
+def walk(P, R, policy):
+    np.random.seed(11)
+    max_iters = 1000
+    total_reward = 0
+    s = 0
+    i = 0
+    while i < max_iters:
+        a = policy[s]
+        r = R[s,a]
+        total_reward += r
+        if r != 0:
+            break
+        s = np.random.choice(STATES, p=P[a,s,:])
+        i += 1
+    return total_reward
 
-S = 5
-LET = 'HFSG'
 np_map = np.ones((S, S), dtype=int)
 toggle = True
 hole_len = int(S * 0.3)
@@ -52,7 +71,10 @@ for s in range(nS):
         transitions = env.P[s][a]
         for p_trans, next_s, reward, _ in transitions:
             P[a,s,next_s] += p_trans
-            R[s,a] = reward
+            if reward == 0:
+                R[s,a] = -0.005
+            else:
+                R[s,a] = reward
         P[a,s,:] /= np.sum(P[a,s,:])
 
 env.close()
@@ -62,6 +84,7 @@ print('R.shape', R.shape)
 
 n_vals = 9
 results = np.zeros((n_vals, 3))
+n_walks = 10
 for i in range(n_vals):
     D = (i + 1) / 10
 
@@ -75,8 +98,14 @@ for i in range(n_vals):
 #    pi.setVerbose()
     pi.run()
 
-    vi_mean_reward = 1 / D ** 2
-    pi_mean_reward = 1 / D ** 3
+    vi_rewards = np.zeros(n_walks)
+    pi_rewards = np.zeros(n_walks)
+    for j in range(n_walks):
+        vi_rewards[j] = walk(P, R, vi.policy)
+        pi_rewards[j] = walk(P, R, pi.policy)
+
+    vi_mean_reward = np.mean(vi_rewards)
+    pi_mean_reward = np.mean(pi_rewards)
 
     results[i,0] = D
     results[i,1] = vi_mean_reward
