@@ -3,6 +3,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+filename = 'results.txt'
+
 def plot_stuff(x, y, xlabel, ylabel, name, yticks=None):
     font = { 'family': 'Times New Roman', 'size': 18 }
     plt.rc('font', **font)
@@ -19,7 +21,7 @@ x_vi = []
 y_vi = []
 x_pi = []
 y_pi = []
-results = open('forest_results.txt', 'r')
+results = open(filename, 'r')
 before_split = True
 for line in results.readlines():
     line = line.strip()
@@ -47,12 +49,12 @@ y_pi = np.array(y_pi)
 #print('y_vi')
 #print(y_vi)
 #print('')
-#print('x_pi')
-#print(x_pi)
-#print('')
-#print('y_pi')
-#print(y_pi)
-#print('')
+print('x_pi')
+print(x_pi)
+print('')
+print('y_pi')
+print(y_pi)
+print('')
 
 #plot_stuff(x_vi, y_vi, 'Iterations', 'Value Variation', 'vi')
 plot_stuff(x_pi, y_pi, 'Iterations', 'Policy Actions Changed', 'pi', yticks=list(range(y_pi.max() + 1)))

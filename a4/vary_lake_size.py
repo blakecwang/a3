@@ -8,9 +8,6 @@ import matplotlib.pyplot as plt
 import pprint
 
 def bar_stuff(x, y, xlabel, ylabel, name):
-#    x = [16,100,256,484,784,1156,1600,2116,2704,3364]
-#    y = np.array([0, 0, 0, 0.00413223, 0.01530612, 0.02595156, 0.07125, 0.13563327, 0.26849112, 0.35523187])
-
     plt.clf()
     font = { 'family': 'Times New Roman', 'size': 18 }
     plt.rc('font', **font)
@@ -18,15 +15,12 @@ def bar_stuff(x, y, xlabel, ylabel, name):
     plt.ylabel(ylabel)
     str_x = []
     for num in x:
-        str_x.append(str(num))
+        str_x.append(str(int(num)))
     plt.xticks(rotation=45)
     plt.bar(str_x,y)
     plt.tight_layout()
     plt.savefig(f"{name}.png")
 #    plt.show()
-
-#bar_stuff(None, None, 'States', 'VI-PI Policy Difference', 'lake_policy_diff')
-#exit()
 
 def plot_stuff(x, y1, y2, y1_label, y2_label, xlabel, ylabel, name):
     plt.clf()
@@ -43,22 +37,18 @@ def plot_stuff(x, y1, y2, y1_label, y2_label, xlabel, ylabel, name):
 
 D = 0.95
 LET = 'HFSG'
-# LET = ' FSG'
+#LET = ' FSG'
+HOLE_DENSITY = 0.05
+np.random.seed(11)
 
-n_vals = 10
+n_vals = 6
 results = np.zeros((n_vals, 6))
 for i in range(n_vals):
     S = 6 * i + 4
     np_map = np.ones((S, S), dtype=int)
-    toggle = True
-    hole_len = int(S * 0.3)
-    offset = S - hole_len
-    for j in range(S - 2):
-        if j % 2 == 0:
-            for k in range(hole_len):
-                np_map[j,(offset+k)%S] = 0
-            toggle = not toggle
-            offset += int(S * 0.6)
+    for _ in range(round(S * S * HOLE_DENSITY)):
+        j, k = np.random.choice(S, size=2, replace=True)
+        np_map[j,k] = 0
     np_map[0,0] = 2
     np_map[S-1,S-1] = 3
 
@@ -87,7 +77,8 @@ for i in range(n_vals):
                     if done:
                         R[s,a] = -1
                     else:
-                        R[s,a] = -0.05
+                        R[s,a] = 0
+                        #R[s,a] = -0.01
             P[a,s,:] /= np.sum(P[a,s,:])
 
     env.close()
@@ -98,15 +89,13 @@ for i in range(n_vals):
     print('R counts', np.unique(R, return_counts=True))
 
     print('================ VI,', 'states =', states)
-
     vi = mdptoolbox.mdp.ValueIteration(P, R, D)
     vi.setVerbose()
-    print('================ VI,', 'states =', states)
     vi.run()
 
+    print('================ PI,', 'states =', states)
     pi = mdptoolbox.mdp.PolicyIteration(P, R, D)
     pi.setVerbose()
-    print('================ PI,', 'states =', states)
     pi.run()
 
     results[i,0] = states
@@ -140,4 +129,4 @@ plot_stuff(
 
 bar_stuff(results[:,0], results[:,5], 'States', 'VI-PI Policy Difference', 'lake_policy_diff')
 
-print(results[:,5])
+#print(results[:,5])
