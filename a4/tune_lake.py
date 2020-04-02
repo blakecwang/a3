@@ -5,28 +5,6 @@ import gym
 import numpy as np
 import mdptoolbox, mdptoolbox.example
 import matplotlib.pyplot as plt
-import pprint
-
-def bar_stuff(x, y, xlabel, ylabel, name):
-#    x = [16,100,256,484,784,1156,1600,2116,2704,3364]
-#    y = np.array([0, 0, 0, 0.00413223, 0.01530612, 0.02595156, 0.07125, 0.13563327, 0.26849112, 0.35523187])
-
-    plt.clf()
-    font = { 'family': 'Times New Roman', 'size': 18 }
-    plt.rc('font', **font)
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
-    str_x = []
-    for num in x:
-        str_x.append(str(num))
-    plt.xticks(rotation=45)
-    plt.bar(str_x,y)
-    plt.tight_layout()
-    plt.savefig(f"{name}.png")
-#    plt.show()
-
-#bar_stuff(None, None, 'States', 'VI-PI Policy Difference', 'lake_policy_diff')
-#exit()
 
 def plot_stuff(x, y1, y2, y1_label, y2_label, xlabel, ylabel, name):
     plt.clf()
@@ -47,8 +25,9 @@ LET = 'HFSG'
 
 n_vals = 10
 results = np.zeros((n_vals, 6))
+S = 58
+
 for i in range(n_vals):
-    S = 6 * i + 4
     np_map = np.ones((S, S), dtype=int)
     toggle = True
     hole_len = int(S * 0.3)
@@ -95,9 +74,9 @@ for i in range(n_vals):
     states = S * S
     print('P.shape', P.shape)
     print('R.shape', R.shape)
-    print('R counts', np.unique(R, return_counts=True))
 
     print('================ VI,', 'states =', states)
+    continue
 
     vi = mdptoolbox.mdp.ValueIteration(P, R, D)
     vi.setVerbose()
@@ -137,7 +116,5 @@ plot_stuff(
     'Time (s)',
     'lake_time_compare'
 )
-
-bar_stuff(results[:,0], results[:,5], 'States', 'VI-PI Policy Difference', 'lake_policy_diff')
 
 print(results[:,5])
