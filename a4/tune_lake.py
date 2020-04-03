@@ -8,8 +8,10 @@ import matplotlib.pyplot as plt
 
 DIR = 'DRUL'
 LET = 'HFSG'
-S = 58
+S = 30
 STATES = S * S
+EPSILON = 0.0000001
+np.random.seed(11)
 
 def plot_stuff(x, y1, y2, y1_label, y2_label, xlabel, ylabel, name):
     plt.clf()
@@ -27,19 +29,23 @@ def plot_stuff(x, y1, y2, y1_label, y2_label, xlabel, ylabel, name):
 # P (A × S × S)
 # R (S × A)
 def walk(P, R, policy):
-    np.random.seed(11)
-    max_iters = 1000
+    max_steps = STATES * 10
     total_reward = 0
     s = 0
     i = 0
-    while i < max_iters:
+    while i < max_steps:
         a = policy[s]
         r = R[s,a]
         total_reward += r
-        if r != 0:
-            break
+        if r == 1:
+            print('Win!', i, 'steps')
+            return total_reward
+        elif r == -1:
+            print('    Lose!')
+            return total_reward
         s = np.random.choice(STATES, p=P[a,s,:])
         i += 1
+    print('        Max!')
     return total_reward
 
 np_map = np.ones((S, S), dtype=int)
@@ -69,10 +75,10 @@ R = np.zeros([nS, nA])
 for s in range(nS):
     for a in range(nA):
         transitions = env.P[s][a]
-        for p_trans, next_s, reward, _ in transitions:
+        for p_trans, next_s, reward, done in transitions:
             P[a,s,next_s] += p_trans
-            if reward == 0:
-                R[s,a] = -0.005
+            if done and reward == 0:
+                R[s,a] = -1
             else:
                 R[s,a] = reward
         P[a,s,:] /= np.sum(P[a,s,:])
@@ -84,13 +90,15 @@ print('R.shape', R.shape)
 
 n_vals = 9
 results = np.zeros((n_vals, 3))
-n_walks = 10
+n_walks = 5
+#for i in [6]:
 for i in range(n_vals):
+
     D = (i + 1) / 10
 
     print('================ VI,', 'discount =', D)
-    vi = mdptoolbox.mdp.ValueIteration(P, R, D)
-#    vi.setVerbose()
+    vi = mdptoolbox.mdp.ValueIteration(P, R, D, epsilon=EPSILON)
+    vi.setVerbose()
     vi.run()
 
     print('================ PI,', 'discount =', D)
@@ -98,6 +106,7 @@ for i in range(n_vals):
 #    pi.setVerbose()
     pi.run()
 
+    print('================ walking,', 'discount =', D)
     vi_rewards = np.zeros(n_walks)
     pi_rewards = np.zeros(n_walks)
     for j in range(n_walks):
