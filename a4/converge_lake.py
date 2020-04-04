@@ -28,7 +28,7 @@ def plot_stuff(x1, x2, y1, y2, y1_label, y2_label, xlabel, ylabel, name):
     plt.legend()
     plt.tight_layout()
     plt.savefig(f"{name}.png")
-    plt.show()
+#    plt.show()
 
 # P (A × S × S)
 # R (S × A)
@@ -97,29 +97,34 @@ print('================ VI,', 'discount =', D)
 vi = mdptoolbox.mdp.ValueIteration(P, R, D, epsilon=EPSILON)
 vi.setVerbose()
 vi.run()
-
-#vi_times = np.array(vi.times)
-#vi_times -= np.full(vi_times.shape[0], vi_times[0])
-#vi_results = np.zeros((vi_times.shape[0], 2))
-#for i in range(vi_results.shape[0]):
-#    vi_results[i,0] = vi_times[i]
-#    rewards = np.zeros(N_WALKS)
-#    for j in range(N_WALKS):
-#        rewards[j] = walk(P, R, vi.policies[i])
-#    vi_results[i,1] = np.mean(rewards)
+vi_times = np.array(vi.times)
+count = vi_times.shape[0]
+vi_times -= np.full(count, vi_times[0])
+vi_results = np.zeros((count, 3))
+last_policy = np.array(vi.policies[count-1])
+for i in range(count):
+    vi_results[i,0] = vi_times[i]
+    rewards = np.zeros(N_WALKS)
+    for j in range(N_WALKS):
+        rewards[j] = walk(P, R, vi.policies[i])
+    vi_results[i,1] = np.mean(rewards)
+    vi_results[i,2] = np.count_nonzero(np.array(vi.policies[i]) != last_policy)
 
 print('================ PI,', 'discount =', D)
 pi = mdptoolbox.mdp.PolicyIteration(P, R, D)
 pi.run()
 pi_times = np.array(pi.times)
-pi_times -= np.full(pi_times.shape[0], pi_times[0])
-pi_results = np.zeros((pi_times.shape[0], 2))
-for i in range(pi_results.shape[0]):
+count = pi_times.shape[0]
+pi_times -= np.full(count, pi_times[0])
+pi_results = np.zeros((count, 3))
+last_policy = np.array(pi.policies[count-1])
+for i in range(count):
     pi_results[i,0] = pi_times[i]
     rewards = np.zeros(N_WALKS)
     for j in range(N_WALKS):
         rewards[j] = walk(P, R, pi.policies[i])
     pi_results[i,1] = np.mean(rewards)
+    pi_results[i,2] = np.count_nonzero(np.array(pi.policies[i]) != last_policy)
 
 plot_stuff(
     vi_results[:,0],
@@ -131,4 +136,16 @@ plot_stuff(
     'Time (s)',
     'Mean Long Term Reward',
     'converge_lake'
+)
+
+plot_stuff(
+    vi_results[:,0],
+    pi_results[:,0],
+    vi_results[:,2],
+    pi_results[:,2],
+    'VI',
+    'PI',
+    'Time (s)',
+    'Difference from Final Policy',
+    'difference_lake'
 )
