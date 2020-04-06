@@ -14,7 +14,7 @@ EPSILON = 0.0000001
 R_HOLE = -0.75
 np.random.seed(11)
 
-def plot_stuff(x, y1, y2, y1_label, y2_label, xlabel, ylabel, name):
+def plot_stuff(x, y1, y2, y3, y1_label, y2_label, y3_label, xlabel, ylabel, name):
     plt.clf()
     font = { 'family': 'Times New Roman', 'size': 18 }
     plt.rc('font', **font)
@@ -22,6 +22,7 @@ def plot_stuff(x, y1, y2, y1_label, y2_label, xlabel, ylabel, name):
     plt.ylabel(ylabel)
     plt.plot(x, y1, label=y1_label)
     plt.plot(x, y2, label=y2_label)
+    plt.plot(x, y3, label=y3_label)
     plt.legend()
     plt.tight_layout()
     plt.savefig(f"{name}.png")
@@ -90,12 +91,15 @@ mdptoolbox.util.check(P, R)
 print('P.shape', P.shape)
 print('R.shape', R.shape)
 
-n_vals = 99
-results = np.zeros((n_vals, 3))
+#n_vals = 99
+n_vals = 9
+
+results = np.zeros((n_vals, 4))
 n_walks = 10
 for i in range(n_vals):
 
-    D = (i + 1) / 100
+#    D = (i + 1) / 100
+    D = (i + 1) / 10
 
     print('================ VI,', 'discount =', D)
     vi = mdptoolbox.mdp.ValueIteration(P, R, D, epsilon=EPSILON)
@@ -107,26 +111,37 @@ for i in range(n_vals):
 #    pi.setVerbose()
     pi.run()
 
+    print('================ QL,', 'discount =', D)
+    ql = mdptoolbox.mdp.QLearning(P, R, D)
+#    ql.setVerbose()
+    ql.run()
+
     print('================ walking,', 'discount =', D)
     vi_rewards = np.zeros(n_walks)
     pi_rewards = np.zeros(n_walks)
+    ql_rewards = np.zeros(n_walks)
     for j in range(n_walks):
         vi_rewards[j] = walk(P, R, vi.policy)
         pi_rewards[j] = walk(P, R, pi.policy)
+        ql_rewards[j] = walk(P, R, ql.policy)
 
     vi_mean_reward = np.mean(vi_rewards)
     pi_mean_reward = np.mean(pi_rewards)
+    ql_mean_reward = np.mean(ql_rewards)
 
     results[i,0] = D
     results[i,1] = vi_mean_reward
     results[i,2] = pi_mean_reward
+    results[i,3] = ql_mean_reward
 
 plot_stuff(
     results[:,0],
     results[:,1],
     results[:,2],
+    results[:,3],
     'VI',
     'PI',
+    'QL',
     'Discount',
     'Mean Long Term Reward',
     'lake_walk'
@@ -134,8 +149,10 @@ plot_stuff(
 
 best_vi_reward = -np.inf
 best_pi_reward = -np.inf
+best_ql_reward = -np.inf
 best_vi_discount = None
 best_pi_discount = None
+best_ql_discount = None
 for result in results:
     if result[1] > best_vi_reward:
         best_vi_reward = result[1]
@@ -143,7 +160,12 @@ for result in results:
     if result[2] > best_pi_reward:
         best_pi_reward = result[2]
         best_pi_discount = result[0]
+    if result[3] > best_ql_reward:
+        best_ql_reward = result[2]
+        best_ql_discount = result[0]
 print('best_vi_reward', best_vi_reward)
 print('best_pi_reward', best_pi_reward)
+print('best_ql_reward', best_ql_reward)
 print('best_vi_discount', best_vi_discount)
 print('best_pi_discount', best_pi_discount)
+print('best_ql_discount', best_ql_discount)
