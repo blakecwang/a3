@@ -91,61 +91,72 @@ for s in range(nS):
 env.close()
 mdptoolbox.util.check(P, R)
 
-D = 0.74
+D_vi = 0.74
+D_pi = 0.74
+D_ql = 0.96
 
-print('================ VI,', 'discount =', D)
-vi = mdptoolbox.mdp.ValueIteration(P, R, D, epsilon=EPSILON)
+print('================ VI,', 'discount =', D_vi)
+vi = mdptoolbox.mdp.ValueIteration(P, R, D_vi, epsilon=EPSILON)
 vi.setVerbose()
 vi.run()
-vi_times = np.array(vi.times)
-count = vi_times.shape[0]
-vi_times -= np.full(count, vi_times[0])
-vi_results = np.zeros((count, 3))
-last_policy = np.array(vi.policies[count-1])
-for i in range(count):
-    vi_results[i,0] = vi_times[i]
-    rewards = np.zeros(N_WALKS)
-    for j in range(N_WALKS):
-        rewards[j] = walk(P, R, vi.policies[i])
-    vi_results[i,1] = np.mean(rewards)
-    vi_results[i,2] = np.count_nonzero(np.array(vi.policies[i]) != last_policy)
+print('vi.time', vi.time)
+print('vi.iter', vi.iter)
+#vi_times = np.array(vi.times)
+#count = vi_times.shape[0]
+#vi_times -= np.full(count, vi_times[0])
+#vi_results = np.zeros((count, 3))
+#last_policy = np.array(vi.policies[count-1])
+#for i in range(count):
+#    vi_results[i,0] = vi_times[i]
+#    rewards = np.zeros(N_WALKS)
+#    for j in range(N_WALKS):
+#        rewards[j] = walk(P, R, vi.policies[i])
+#    vi_results[i,1] = np.mean(rewards)
+#    vi_results[i,2] = np.count_nonzero(np.array(vi.policies[i]) != last_policy)
 
-print('================ PI,', 'discount =', D)
-pi = mdptoolbox.mdp.PolicyIteration(P, R, D)
+print('================ PI,', 'discount =', D_pi)
+pi = mdptoolbox.mdp.PolicyIteration(P, R, D_pi)
 pi.run()
-pi_times = np.array(pi.times)
-count = pi_times.shape[0]
-pi_times -= np.full(count, pi_times[0])
-pi_results = np.zeros((count, 3))
-last_policy = np.array(pi.policies[count-1])
-for i in range(count):
-    pi_results[i,0] = pi_times[i]
-    rewards = np.zeros(N_WALKS)
-    for j in range(N_WALKS):
-        rewards[j] = walk(P, R, pi.policies[i])
-    pi_results[i,1] = np.mean(rewards)
-    pi_results[i,2] = np.count_nonzero(np.array(pi.policies[i]) != last_policy)
+print('pi.time', pi.time)
+print('pi.iter', pi.iter)
+#pi_times = np.array(pi.times)
+#count = pi_times.shape[0]
+#pi_times -= np.full(count, pi_times[0])
+#pi_results = np.zeros((count, 3))
+#last_policy = np.array(pi.policies[count-1])
+#for i in range(count):
+#    pi_results[i,0] = pi_times[i]
+#    rewards = np.zeros(N_WALKS)
+#    for j in range(N_WALKS):
+#        rewards[j] = walk(P, R, pi.policies[i])
+#    pi_results[i,1] = np.mean(rewards)
+#    pi_results[i,2] = np.count_nonzero(np.array(pi.policies[i]) != last_policy)
 
-plot_stuff(
-    vi_results[:,0],
-    pi_results[:,0],
-    vi_results[:,1],
-    pi_results[:,1],
-    'VI',
-    'PI',
-    'Time (s)',
-    'Mean Long Term Reward',
-    'converge_lake'
-)
+print('================ QL,', 'discount =', D_ql)
+ql = mdptoolbox.mdp.QLearning(P, R, D_ql, n_iter=1e6)
+ql.run()
+print('ql.time', ql.time)
 
-plot_stuff(
-    vi_results[:,0],
-    pi_results[:,0],
-    vi_results[:,2],
-    pi_results[:,2],
-    'VI',
-    'PI',
-    'Time (s)',
-    'Difference from Final Policy',
-    'difference_lake'
-)
+#plot_stuff(
+#    vi_results[:,0],
+#    pi_results[:,0],
+#    vi_results[:,1],
+#    pi_results[:,1],
+#    'VI',
+#    'PI',
+#    'Time (s)',
+#    'Mean Long Term Reward',
+#    'converge_lake'
+#)
+#
+#plot_stuff(
+#    vi_results[:,0],
+#    pi_results[:,0],
+#    vi_results[:,2],
+#    pi_results[:,2],
+#    'VI',
+#    'PI',
+#    'Time (s)',
+#    'Difference from Final Policy',
+#    'difference_lake'
+#)

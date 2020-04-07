@@ -97,23 +97,24 @@ n_vals = 9
 results = np.zeros((n_vals, 4))
 n_walks = 10
 for i in range(n_vals):
+#for i in range(1):
 
 #    D = (i + 1) / 100
-    D = (i + 1) / 10
+#    D = (i + 1) / 10
+#    D = 0.98
 
-    print('================ VI,', 'discount =', D)
-    vi = mdptoolbox.mdp.ValueIteration(P, R, D, epsilon=EPSILON)
-#    vi.setVerbose()
-    vi.run()
-
-    print('================ PI,', 'discount =', D)
-    pi = mdptoolbox.mdp.PolicyIteration(P, R, D)
-#    pi.setVerbose()
-    pi.run()
+#    print('================ VI,', 'discount =', D)
+#    vi = mdptoolbox.mdp.ValueIteration(P, R, D, epsilon=EPSILON)
+##    vi.setVerbose()
+#    vi.run()
+#
+#    print('================ PI,', 'discount =', D)
+#    pi = mdptoolbox.mdp.PolicyIteration(P, R, D)
+##    pi.setVerbose()
+#    pi.run()
 
     print('================ QL,', 'discount =', D)
-    ql = mdptoolbox.mdp.QLearning(P, R, D)
-#    ql.setVerbose()
+    ql = mdptoolbox.mdp.QLearning(P, R, D, n_iter=int(1e6))
     ql.run()
 
     print('================ walking,', 'discount =', D)

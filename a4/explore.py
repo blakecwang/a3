@@ -7,12 +7,16 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 
-def f(x):
-    return (1 - (1 / math.log(x + 2)))
+def f(n):
+    # probability of greediness decay
+#    return 1 - (1 / math.log(n + 1.0001))
+    # learning rate decay
+    return 1 / math.sqrt(n + 0.00001)
 
-x = np.arange(10000)
+x = np.arange(500000)
 y = np.vectorize(f)(x)
 print(y[-1])
+print(y[100000])
 
 plt.plot(x, y)
 plt.show()
