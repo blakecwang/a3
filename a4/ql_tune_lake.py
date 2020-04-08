@@ -6,17 +6,23 @@ import numpy as np
 import mdptoolbox, mdptoolbox.example
 import matplotlib.pyplot as plt
 
-states = 15
+DIR = 'DRUL'
+LET = 'HFSG'
+S = 30
 
-n_vals = 10
+states = S * S
+epsilon = 0.0000001
+r_hole = -0.75
+
+n_vals = 30
 min_val = 10000
 max_val = 150000
 step = (max_val - min_val) / n_vals
 
-n_walks = 1000
-n_steps = states * 10
+n_walks = 100
 
-results = np.zeros((n_vals+1, 2))
+#results = np.zeros((n_vals+1, 2))
+results = np.zeros((n_vals, 2))
 np.random.seed(11)
 
 def plot_stuff(x, y, xlabel, ylabel, name):
@@ -33,52 +39,103 @@ def plot_stuff(x, y, xlabel, ylabel, name):
 # P (A × S × S)
 # R (S × A)
 def walk(P, R, policy):
+    #print(np.unique(R, return_counts=True))
+    max_steps = states * 10
     total_reward = 0
     s = 0
     i = 0
-    while i < n_steps:
+    while i < max_steps:
         a = policy[s]
         r = R[s,a]
         total_reward += r
+        if r == 1:
+            print('Win!', i, 'steps')
+            return total_reward
+        elif r == r_hole:
+            print('    Lose!')
+            return total_reward
         s = np.random.choice(states, p=P[a,s,:])
         i += 1
+    print('        Max!')
     return total_reward
 
-P, R = mdptoolbox.example.forest(S=states)
-D = 0.99
+np_map = np.ones((S, S), dtype=int)
+toggle = True
+hole_len = int(S * 0.3)
+offset = S - hole_len
+for j in range(S - 2):
+    if j % 2 == 0:
+        for k in range(hole_len):
+            np_map[j,(offset+k)%S] = 0
+        toggle = not toggle
+        offset += int(S * 0.6)
+np_map[0,0] = 2
+np_map[S-1,S-1] = 3
 
-for i, n_iter in enumerate(np.arange(min_val, max_val+step, step=step)):
-    n_iter = int(n_iter)
+custom_map = []
+for j in range(S):
+    mystr = ''
+    for k in range(S):
+        mystr += LET[np_map[j,k]]
+    custom_map.append(mystr)
+
+env = gym.make('FrozenLake-v0', desc=custom_map, is_slippery=True)
+nA, nS = env.nA, env.nS
+P = np.zeros([nA, nS, nS])
+R = np.zeros([nS, nA])
+for s in range(nS):
+    for a in range(nA):
+        transitions = env.P[s][a]
+        for p_trans, next_s, reward, done in transitions:
+            P[a,s,next_s] += p_trans
+            if done and reward == 0:
+                R[s,a] = r_hole
+            else:
+                R[s,a] = reward
+        P[a,s,:] /= np.sum(P[a,s,:])
+
+env.close()
+mdptoolbox.util.check(P, R)
+
+# all wins at n_iter = 0.7, 0.74, 0.82, 0.84, 0.86
+n_iter = int(1e5)
+
+#for i, n_iter in enumerate(np.arange(min_val, max_val+step, step=step)):
+#    n_iter = int(n_iter)
+
+for i in range(n_vals):
+    D = 0.7 + i/100
 
     print('================ QL n_iter =', n_iter, 'D =', D)
     ql = mdptoolbox.mdp.QLearning2(P, R, D, n_iter=n_iter)
     ql.run()
-    print('time', ql.time)
-    print(ql.policy)
-    print(ql.N)
+#    print('time', ql.time)
+#    print(ql.policy)
+#    print(ql.N)
 
     print('walking...')
     rewards = np.array([walk(P, R, ql.policy) for _ in range(n_walks)])
     mean_reward = np.mean(rewards)
 
-    results[i,0] = n_iter
+    results[i,0] = D
+#    results[i,0] = n_iter
     results[i,1] = mean_reward
 
 print(results)
 
-print('================ VI n_iter =', n_iter, 'D =', 0.98)
-vi = mdptoolbox.mdp.ValueIteration(P, R, 0.98)
-vi.run()
-print('walking...')
-rewards = np.array([walk(P, R, vi.policy) for _ in range(n_walks)])
-mean_reward = np.mean(rewards)
-print('VI mean reward', mean_reward)
-print(vi.policy)
-
 plot_stuff(
     results[:,0],
     results[:,1],
-    'Iterations',
+    'Discount',
     'Mean Long Term Reward',
-    'ql_tune_iter_forest'
+    'ql_tune_discount_lake'
 )
+
+best_reward = -np.inf
+best_discount = None
+for result in results:
+    if result[1] > best_reward:
+        best_reward = result[1]
+        best_discount = result[0]
+print('best_reward', best_reward)
+print('best_discount', best_discount)
