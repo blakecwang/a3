@@ -14,9 +14,9 @@ states = S * S
 epsilon = 0.0000001
 r_hole = -0.75
 
-n_vals = 20
+n_vals = 10
 min_val = 10000
-max_val = 1000000
+max_val = 100000
 step = (max_val - min_val) / n_vals
 
 n_walks = 100
