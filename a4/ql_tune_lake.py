@@ -14,24 +14,27 @@ states = S * S
 epsilon = 0.0000001
 r_hole = -0.75
 
-n_vals = 10
+n_vals = 20
 min_val = 10000
-max_val = 100000
+max_val = 1000000
 step = (max_val - min_val) / n_vals
 
 n_walks = 100
 
-results = np.zeros((n_vals+1, 2))
+results = np.zeros((n_vals+1, 4))
 #results = np.zeros((n_vals, 2))
 np.random.seed(11)
 
-def plot_stuff(x, y, xlabel, ylabel, name):
+def plot_stuff(x, y1, y2, y3, y1_label, y2_label, y3_label, xlabel, ylabel, name):
     plt.clf()
     font = { 'family': 'Times New Roman', 'size': 18 }
     plt.rc('font', **font)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
-    plt.plot(x, y)
+    plt.plot(x, y1, label=y1_label)
+    plt.plot(x, y2, label=y2_label)
+    plt.plot(x, y3, label=y3_label)
+    plt.legend()
     plt.tight_layout()
     plt.savefig(f"{name}.png")
     plt.show()
@@ -99,7 +102,7 @@ mdptoolbox.util.check(P, R)
 
 # all wins at n_iter = 0.7, 0.74, 0.82, 0.84, 0.86
 #n_iter = int(1e5)
-D = 0.74
+D = 0.75
 
 for i, n_iter in enumerate(np.arange(min_val, max_val+step, step=step)):
     n_iter = int(n_iter)
@@ -107,29 +110,43 @@ for i, n_iter in enumerate(np.arange(min_val, max_val+step, step=step)):
 #for i in range(n_vals):
 #    D = 0.7 + i/100
 
-    print('================ QL n_iter =', n_iter, 'D =', D)
-    ql = mdptoolbox.mdp.QLearning2(P, R, D, n_iter=n_iter)
-    ql.run()
-#    print('time', ql.time)
-#    print(ql.policy)
-#    print(ql.N)
-
+    print('================ QL-epsilon-greedy n_iter =', n_iter, 'D =', D)
+    ql_eps = mdptoolbox.mdp.QLearning(P, R, D, n_iter=n_iter)
+    ql_eps.run()
     print('walking...')
-    rewards = np.array([walk(P, R, ql.policy) for _ in range(n_walks)])
-    mean_reward = np.mean(rewards)
+    eps_mean_reward = np.mean(np.array([walk(P, R, ql_eps.policy) for _ in range(n_walks)]))
+
+    print('================ QL-random n_iter =', n_iter, 'D =', D)
+    ql_rdm = mdptoolbox.mdp.QLearningRandom(P, R, D, n_iter=n_iter)
+    ql_rdm.run()
+    print('walking...')
+    rdm_mean_reward = np.mean(np.array([walk(P, R, ql_rdm.policy) for _ in range(n_walks)]))
+
+    print('================ QL-random n_iter =', n_iter, 'D =', D)
+    ql_ucb = mdptoolbox.mdp.QLearningUCB(P, R, D, n_iter=n_iter)
+    ql_ucb.run()
+    print('walking...')
+    ucb_mean_reward = np.mean(np.array([walk(P, R, ql_ucb.policy) for _ in range(n_walks)]))
 
 #    results[i,0] = D
     results[i,0] = n_iter
-    results[i,1] = mean_reward
+    results[i,1] = eps_mean_reward
+    results[i,2] = rdm_mean_reward
+    results[i,3] = ucb_mean_reward
 
 print(results)
 
 plot_stuff(
     results[:,0],
     results[:,1],
-    'Discount',
+    results[:,2],
+    results[:,3],
+    'Decaying ε-greedy',
+    'Random',
+    'UCB',
+    'Iterations',
     'Mean Long Term Reward',
-    'ql_tune_n_iter_lake'
+    'ql_tune_n_iter_lake_strategies'
 )
 
 #best_reward = -np.inf
