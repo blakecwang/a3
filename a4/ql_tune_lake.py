@@ -14,15 +14,15 @@ states = S * S
 epsilon = 0.0000001
 r_hole = -0.75
 
-n_vals = 30
+n_vals = 10
 min_val = 10000
-max_val = 150000
+max_val = 100000
 step = (max_val - min_val) / n_vals
 
 n_walks = 100
 
-#results = np.zeros((n_vals+1, 2))
-results = np.zeros((n_vals, 2))
+results = np.zeros((n_vals+1, 2))
+#results = np.zeros((n_vals, 2))
 np.random.seed(11)
 
 def plot_stuff(x, y, xlabel, ylabel, name):
@@ -98,13 +98,14 @@ env.close()
 mdptoolbox.util.check(P, R)
 
 # all wins at n_iter = 0.7, 0.74, 0.82, 0.84, 0.86
-n_iter = int(1e5)
+#n_iter = int(1e5)
+D = 0.74
 
-#for i, n_iter in enumerate(np.arange(min_val, max_val+step, step=step)):
-#    n_iter = int(n_iter)
+for i, n_iter in enumerate(np.arange(min_val, max_val+step, step=step)):
+    n_iter = int(n_iter)
 
-for i in range(n_vals):
-    D = 0.7 + i/100
+#for i in range(n_vals):
+#    D = 0.7 + i/100
 
     print('================ QL n_iter =', n_iter, 'D =', D)
     ql = mdptoolbox.mdp.QLearning2(P, R, D, n_iter=n_iter)
@@ -117,8 +118,8 @@ for i in range(n_vals):
     rewards = np.array([walk(P, R, ql.policy) for _ in range(n_walks)])
     mean_reward = np.mean(rewards)
 
-    results[i,0] = D
-#    results[i,0] = n_iter
+#    results[i,0] = D
+    results[i,0] = n_iter
     results[i,1] = mean_reward
 
 print(results)
@@ -128,14 +129,14 @@ plot_stuff(
     results[:,1],
     'Discount',
     'Mean Long Term Reward',
-    'ql_tune_discount_lake'
+    'ql_tune_n_iter_lake'
 )
 
-best_reward = -np.inf
-best_discount = None
-for result in results:
-    if result[1] > best_reward:
-        best_reward = result[1]
-        best_discount = result[0]
-print('best_reward', best_reward)
-print('best_discount', best_discount)
+#best_reward = -np.inf
+#best_n_iter = None
+#for result in results:
+#    if result[1] > best_reward:
+#        best_reward = result[1]
+#        best_n_iter = result[0]
+#print('best_reward', best_reward)
+#print('best_n_iter', best_n_iter)
